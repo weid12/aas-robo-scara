@@ -1,0 +1,50 @@
+@font-face {
+  font-family: "LGEIText";
+  src: url("../assets/fonts/LGEIText-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LGEIText";
+  src: url("../assets/fonts/LGEIText-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: "LGEIText", "Segoe UI", Tahoma, sans-serif;
+  background-color: #0d101d;
+  color: #f5f6fc;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: inherit;
+  background: radial-gradient(1400px 1200px at 80% -10%, rgba(194, 37, 92, 0.12), transparent 45%), #0d101d;
+  color: inherit;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
