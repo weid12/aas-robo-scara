@@ -1,0 +1,60 @@
+{
+    "Identification": {
+      "Model": "ns=2;s=Model3",
+      "Manufacturer": "ns=2;s=Manufacturer3",
+      "SN": "ns=2;s=SerialNumber3",
+      "Code": "ns=2;s=ProductCode3",
+      "ProductName": "ns=0;i=2261",
+      "ProductUri": "ns=0;i=2262",
+      "SoftwareRevision": "ns=0;i=2264",
+      "BuildNumber": "ns=0;i=2265",
+      "BuildDate": "ns=0;i=2266"
+    },
+    "TechnicalData": {
+      "Range": { "manual": "800 mm", "policy": "manual-only" },
+      "Payload": { "manual": "8 kg", "policy": "manual-only" },
+      "Repeatability": { "manual": "±0.02 mm", "policy": "manual-only" },
+      "Weight": { "manual": "42 kg", "policy": "manual-only" },
+      "PayloadUser": "ns=1;s=Robot:Controller:System:PayloadUser:Mass"
+    },
+    "OperationalData": {
+      "JointPosition1": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position",
+      "JointPosition2": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position",
+      "JointPosition3": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position",
+      "JointPosition4": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position",
+      "WorkingMode": "ns=1;s=Robot:Controller:System:WorkingMode:Working Mode",
+      "RobotStatus": "ns=1;s=Robot:Controller:System:RobotStatus:Robot Status",
+      "CycleTime": "ns=1;s=Robot:Controller:Versions:System:CycleTime"
+    },
+    "TemperatureData": {
+      "motorProbe1_temp": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe1_temp",
+      "motorProbe2_temp": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe2_temp",
+      "motorProbe3_temp": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe3_temp",
+      "motorProbe4_temp": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe4_temp",
+      "IWtemperature": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:IWtemperature"
+    },
+   "Safety": {
+    "EmergencyStop": "ns=2;s=EmergencyStop",
+    "SafetyStatus": "ns=1;s=Robot:Controller:System:SafetyStatus:Safety Status",
+    "SafetyFault": "ns=1;s=Robot:Controller:System:SafetyFault:Safety Fault",
+    "SafetyFaultCode": "ns=1;s=Robot:Controller:System:SafetyFaultCode:Safety Fault Code",
+    "Izone1": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone1",
+    "Izone2": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone2",
+    "Izone3": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone3",
+    "Izone4": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone4"
+    },
+    "CounterData": {
+      "operationCounter": "ns=1;s=Robot:Inputs/Outputs:DsiIO:operationCounter"
+    },
+    "PowerData": {
+      "PowerSupplyIO": "ns=2;s=TotalPowerOnTime",
+      "PowerOn": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:IpowerOn",
+      "PowerOnController": "ns=0;i=2259"
+    },
+    "RuntimeDiagnostics": {
+      "StartTime": "ns=0;i=2257",
+      "CurrentTime": "ns=0;i=2258"
+    }
+  }
+  
+  

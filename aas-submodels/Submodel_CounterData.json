@@ -1,0 +1,29 @@
+{
+  "category": "VARIABLE",
+  "idShort": "CounterData",
+  "id": "https://example.com/ids/sm/3305_3221_5052_1566",
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "category": "VARIABLE",
+      "idShort": "operationCounter",
+      "description": [
+        {
+          "language": "en",
+          "text": "Robot cycle counter"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:int",
+          "value": "ns=1;s=Robot:Inputs/Outputs:DsiIO:operationCounter"
+        }
+      ],
+      "valueType": "xs:int",
+      "modelType": "Property",
+      "value": 1139872
+    }
+  ],
+  "modelType": "Submodel"
+}

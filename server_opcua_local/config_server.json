@@ -1,0 +1,5 @@
+{
+    "endpoint": "opc.tcp://0.0.0.0:4842",
+    "namespace": "http://example.com/aas/Identification"
+  }
+  

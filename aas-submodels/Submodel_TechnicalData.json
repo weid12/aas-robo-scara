@@ -1,0 +1,47 @@
+{
+  "category": "PARAMETER",
+  "idShort": "TechnicalData",
+  "id": "https://example.com/ids/sm/2350_3203_4052_8566",
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "idShort": "Range",
+      "valueType": "xs:string",
+      "value": "800 mm",
+      "modelType": "Property"
+    },
+    {
+      "idShort": "Payload",
+      "valueType": "xs:string",
+      "value": "2,4 kg",
+      "modelType": "Property"
+    },
+    {
+      "idShort": "Repeatability",
+      "valueType": "xs:string",
+      "value": "±0,01 mm",
+      "modelType": "Property"
+    },
+    {
+      "idShort": "Weight",
+      "valueType": "xs:string",
+      "value": "53 kg",
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "PayloadUser",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:System:PayloadUser:Mass"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "7.0"
+    }
+  ],
+  "modelType": "Submodel"
+}

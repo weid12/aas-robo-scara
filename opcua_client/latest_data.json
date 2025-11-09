@@ -1,0 +1,90 @@
+{
+    "Identification": {
+        "Model": "ts2_80-S1-D25-L200-floor-R4-V7",
+        "Manufacturer": "Staubli",
+        "SN": "F_21_0029073_A_005",
+        "Code": "Robot",
+        "ProductName": "Staubli F-21-0029073-C-005 robot OpcUa server",
+        "ProductUri": "urn:Staubli/Products/OpcUa/Server",
+        "SoftwareRevision": "2.0.0",
+        "BuildNumber": "0",
+        "BuildDate": "2022-10-27T01:05:17+00:00"
+    },
+    "TechnicalData": {
+        "Range": {
+            "manual": "800 mm",
+            "policy": "manual-only"
+        },
+        "Payload": {
+            "manual": "8 kg",
+            "policy": "manual-only"
+        },
+        "Repeatability": {
+            "manual": "±0.02 mm",
+            "policy": "manual-only"
+        },
+        "Weight": {
+            "manual": "42 kg",
+            "policy": "manual-only"
+        },
+        "PayloadUser": 7.0
+    },
+    "OperationalData": {
+        "JointPosition1": [
+            6.224425810741208,
+            53.41579565549284,
+            187.9996135334193,
+            -126.15056947422309
+        ],
+        "JointPosition2": [
+            6.224425810741208,
+            53.41579565549284,
+            187.9996135334193,
+            -126.15056947422309
+        ],
+        "JointPosition3": [
+            6.224425810741208,
+            53.4157960173782,
+            187.9996140301247,
+            -126.15055874538702
+        ],
+        "JointPosition4": [
+            6.224425810741208,
+            53.4157960173782,
+            187.9996140301247,
+            -126.15055874538702
+        ],
+        "WorkingMode": "manual slow",
+        "RobotStatus": "estop",
+        "CycleTime": "0.004s"
+    },
+    "TemperatureData": {
+        "motorProbe1_temp": 21.100000381469727,
+        "motorProbe2_temp": 22.899999618530273,
+        "motorProbe3_temp": 23.299999237060547,
+        "motorProbe4_temp": 24.700000762939453,
+        "IWtemperature": 41
+    },
+    "Safety": {
+        "EmergencyStop": false,
+        "SafetyStatus": "SS1",
+        "SafetyFault": "the enabling device is released",
+        "SafetyFaultCode": 163.0,
+        "Izone1": true,
+        "Izone2": true,
+        "Izone3": false,
+        "Izone4": false
+    },
+    "CounterData": {
+        "operationCounter": 1139872
+    },
+    "PowerData": {
+        "PowerSupplyIO": "P00Y00M00DT01H39M16S",
+        "PowerOn": false,
+        "PowerOnController": 0
+    },
+    "RuntimeDiagnostics": {
+        "StartTime": "2019-08-07T19:07:40.487809+00:00",
+        "CurrentTime": "2019-08-07T20:46:12.955468+00:00"
+    }
+}

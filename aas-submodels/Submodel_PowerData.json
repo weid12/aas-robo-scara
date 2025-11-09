@@ -1,0 +1,57 @@
+{
+  "category": "VARIABLE",
+  "idShort": "PowerData",
+  "id": "https://example.com/ids/sm/4435_3221_5052_9255",
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "category": "VARIABLE",
+      "idShort": "PowerSupplyIO",
+      "description": [
+        {
+          "language": "en",
+          "text": "Voltage or power status"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=2;s=TotalPowerOnTime"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "P00Y00M00DT01H39M16S"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "PowerOn",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:IpowerOn"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "False"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "PowerOnController",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2259"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "0"
+    }
+  ],
+  "modelType": "Submodel"
+}

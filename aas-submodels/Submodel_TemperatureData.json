@@ -1,0 +1,109 @@
+{
+  "category": "VARIABLE",
+  "idShort": "TemperatureData",
+  "id": "https://example.com/ids/sm/3404_3270_5052_8016",
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "category": "VARIABLE",
+      "idShort": "motorProbe1_temp",
+      "description": [
+        {
+          "language": "en",
+          "text": "Robot Joint 1 Motor Temperature"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe1_temp"
+        }
+      ],
+      "valueType": "xs:double",
+      "modelType": "Property",
+      "value": 21.100000381469727
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "motorProbe2_temp",
+      "description": [
+        {
+          "language": "en",
+          "text": "Robot Joint 2 Motor Temperature"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe2_temp"
+        }
+      ],
+      "valueType": "xs:double",
+      "modelType": "Property",
+      "value": 22.899999618530273
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "motorProbe3_temp",
+      "description": [
+        {
+          "language": "en",
+          "text": "Axis 3 (linear Z) motor temperature"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe3_temp"
+        }
+      ],
+      "valueType": "xs:double",
+      "modelType": "Property",
+      "value": 23.299999237060547
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "motorProbe4_temp",
+      "description": [
+        {
+          "language": "en",
+          "text": "Robot Joint 4 Motor Temperature"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe4_temp"
+        }
+      ],
+      "valueType": "xs:double",
+      "modelType": "Property",
+      "value": 24.700000762939453
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "IWtemperature",
+      "description": [
+        {
+          "language": "en",
+          "text": "Controller internal temperature"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:IWtemperature"
+        }
+      ],
+      "valueType": "xs:double",
+      "modelType": "Property",
+      "value": 41.0
+    }
+  ],
+  "modelType": "Submodel"
+}

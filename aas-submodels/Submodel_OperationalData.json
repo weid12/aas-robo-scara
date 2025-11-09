@@ -1,0 +1,148 @@
+{
+  "category": "VARIABLE",
+  "idShort": "OperationalData",
+  "id": "https://example.com/ids/sm/8065_0070_5052_7153",
+  "kind": "Instance",
+  "semanticId": {
+    "type": "ExternalReference",
+    "keys": []
+  },
+  "embeddedDataSpecifications": [],
+  "submodelElements": [
+    {
+      "category": "VARIABLE",
+      "idShort": "JointPosition1",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position"
+        }
+      ],
+      "valueType": "xs:double",
+      "value": [
+        6.224425933817256,
+        53.41579692209155,
+        187.99961676200428,
+        -126.15056053352636
+      ],
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "JointPosition2",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position"
+        }
+      ],
+      "valueType": "xs:double",
+      "value": [
+        6.224425933817256,
+        53.41579692209155,
+        187.99961676200428,
+        -126.15056053352636
+      ],
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "JointPosition3",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position"
+        }
+      ],
+      "valueType": "xs:double",
+      "value": [
+        6.224428641490272,
+        53.415792217582116,
+        187.99961688618058,
+        -126.15056679201408
+      ],
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "JointPosition4",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:decimal",
+          "value": "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position"
+        }
+      ],
+      "valueType": "xs:double",
+      "value": [
+        6.224428641490272,
+        53.415792217582116,
+        187.99961688618058,
+        -126.15056679201408
+      ],
+      "modelType": "Property"
+    },
+    {
+      "idShort": "WorkingMode",
+      "description": [
+        {
+          "language": "en",
+          "text": "General operating mode"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:System:WorkingMode:Working Mode"
+        }
+      ],
+      "valueType": "xs:string",
+      "value": "manual slow",
+      "modelType": "Property"
+    },
+    {
+      "idShort": "RobotStatus",
+      "description": [
+        {
+          "language": "en",
+          "text": "General condition of the robot"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:System:RobotStatus:Robot Status"
+        }
+      ],
+      "valueType": "xs:string",
+      "value": "estop",
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "CycleTime",
+      "description": [
+        {
+          "language": "en",
+          "text": "Cycle time (ms)"
+        }
+      ],
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:Versions:System:CycleTime"
+        }
+      ],
+      "valueType": "xs:double",
+      "value": "0.004s",
+      "modelType": "Property"
+    }
+  ],
+  "modelType": "Submodel"
+}

@@ -1,0 +1,61 @@
+{
+  "endpoint": "opc.tcp://localhost:4881/",
+  "object": "SCARA_TS2_80",
+  "timestamp": 5849.046,
+  "variables": [
+    {
+      "name": "Model",
+      "value": "ts2_80-S1-D25-L200-floor-R4-V7",
+      "node_id": "ns=2;i=2",
+      "data_type": "String"
+    },
+    {
+      "name": "Manufacturer",
+      "value": "Staubli",
+      "node_id": "ns=2;i=3",
+      "data_type": "String"
+    },
+    {
+      "name": "SN",
+      "value": "F_21_0029073_A_005",
+      "node_id": "ns=2;i=4",
+      "data_type": "String"
+    },
+    {
+      "name": "Code",
+      "value": "Robot",
+      "node_id": "ns=2;i=5",
+      "data_type": "String"
+    },
+    {
+      "name": "ProductName",
+      "value": "Staubli F-21-0029073-C-005 robot OpcUa server",
+      "node_id": "ns=2;i=6",
+      "data_type": "String"
+    },
+    {
+      "name": "ProductUri",
+      "value": "urn:Staubli/Products/OpcUa/Server",
+      "node_id": "ns=2;i=7",
+      "data_type": "String"
+    },
+    {
+      "name": "SoftwareRevision",
+      "value": "2.0.0",
+      "node_id": "ns=2;i=8",
+      "data_type": "String"
+    },
+    {
+      "name": "BuildNumber",
+      "value": "0",
+      "node_id": "ns=2;i=9",
+      "data_type": "String"
+    },
+    {
+      "name": "BuildDate",
+      "value": "2022-10-27T01:05:17+00:00",
+      "node_id": "ns=2;i=10",
+      "data_type": "String"
+    }
+  ]
+}

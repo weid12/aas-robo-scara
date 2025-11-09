@@ -1,0 +1,122 @@
+{
+  "category": "VARIABLE",
+  "idShort": "Safety",
+  "id": "https://example.com/ids/sm/1530_2092_9052_4928",
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "category": "VARIABLE",
+      "idShort": "EmergencyStop",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=2;s=EmergencyStop"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "False"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "SafetyStatus",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:System:SafetyStatus:Safety Status"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "SS1"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "SafetyFault",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:System:SafetyFault:Safety Fault"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "the enabling device is released"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "SafetyFaultCode",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Controller:System:SafetyFaultCode:Safety Fault Code"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "163.0"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "Izone1",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone1"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "True"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "Izone2",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone2"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "True"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "Izone3",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone3"
+        }
+      ],
+      "embeddedDataSpecifications": [],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "False"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "Izone4",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone4"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "False"
+    }
+  ],
+  "modelType": "Submodel"
+}

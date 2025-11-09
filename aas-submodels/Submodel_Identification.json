@@ -1,0 +1,219 @@
+{
+  "category": "CONSTANT",
+  "idShort": "Identification",
+  "id": "https://example.com/ids/sm/4104_2203_4052_0125",
+  "kind": "Instance",
+  "embeddedDataSpecifications": [],
+  "submodelElements": [
+    {
+      "category": "PARAMETER",
+      "idShort": "Model",
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#02-AAO227#002"
+              }
+            ]
+          },
+          "kind": "ValueQualifier",
+          "type": "OPCUA.NodeID",
+          "valueType": "xs:string",
+          "value": "ns=2;s=Model3"
+        }
+      ],
+      "valueType": "xs:string",
+      "value": "ts2_80-S1-D25-L200-floor-R4-V7",
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "Manufacturer",
+      "displayName": [],
+      "description": [],
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "0173-1#02-AAO677#002"
+          }
+        ]
+      },
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/ZVEI/TechnicalData/Submodel/1/2"
+              }
+            ]
+          },
+          "kind": "ValueQualifier",
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=2;s=Manufacturer3"
+        }
+      ],
+      "valueType": "xs:string",
+      "value": "Staubli",
+      "modelType": "Property"
+    },
+    {
+      "idShort": "SN",
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#02-AAM556#002"
+              }
+            ]
+          },
+          "kind": "ConceptQualifier",
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=2;s=Model3"
+        }
+      ],
+      "valueType": "xs:string",
+      "value": "ts2_80-S1-D25-L200-floor-R4-V7",
+      "modelType": "Property"
+    },
+    {
+      "idShort": "Code",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=2;s=ProductCode3"
+        }
+      ],
+      "valueType": "xs:string",
+      "value": "Robot",
+      "modelType": "Property"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "ProductName",
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/zvei/nameplate/2/0/Nameplate"
+              }
+            ]
+          },
+          "kind": "ConceptQualifier",
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2261",
+          "valueId": {
+            "type": "ExternalReference",
+            "keys": []
+          }
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "Staubli F-21-0029073-C-005 robot OpcUa server"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "ProductUri",
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#02-AAO676#003"
+              }
+            ]
+          },
+          "kind": "ValueQualifier",
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2262"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "urn:Staubli/Products/OpcUa/Server"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "SoftwareRevision",
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#02-AAM737#002"
+              }
+            ]
+          },
+          "kind": "ConceptQualifier",
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2264"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "2.0.0"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "BuildNumber",
+      "qualifiers": [
+        {
+          "semanticId": {
+            "type": "ExternalReference",
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "0173-1#02-AAO227#002"
+              }
+            ]
+          },
+          "kind": "ConceptQualifier",
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2265"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "0"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "BuildDate",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2266"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "2022-10-27T01:05:17+00:00"
+    }
+  ],
+  "modelType": "Submodel"
+}

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SCARA Dashboard</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">SCARA Dashboard</div>
+      <div class="status">
+        <span id="last-update">--</span>
+        <button id="refresh" title="Atualizar agora">↻</button>
+      </div>
+    </header>
+
+    <main class="layout v2">
+      <aside class="left panel" aria-label="Dispositivos">
+        <div class="panel-title">Devices</div>
+        <div class="device-list" id="device-list">
+          <!-- itens preenchidos por JS -->
+        </div>
+      </aside>
+
+      <section class="center">
+        <div class="timeline">
+          <div class="ticks">
+            <span>10:00</span><span>10:05</span><span>10:10</span><span>10:15</span><span>10:20</span><span>10:25</span>
+          </div>
+          <div class="cursor" id="time-cursor"></div>
+        </div>
+        <div class="scene panel">
+          <img class="scara-img" src="/assets/scara.svg" alt="SCARA" />
+          <div class="joint-badge" id="joint1"><span>--</span></div>
+          <div class="joint-badge" id="joint2"><span>--</span></div>
+          <div class="joint-badge" id="joint3"><span>--</span></div>
+          <div class="joint-badge" id="joint4"><span>--</span></div>
+        </div>
+
+        <section class="panel history" aria-label="Histórico">
+          <div class="panel-title">Histórico</div>
+          <div class="history-controls">
+            <select id="metric-select"></select>
+            <button id="load-history">Carregar</button>
+          </div>
+          <canvas id="chart" height="160"></canvas>
+        </section>
+
+        <section class="panel" id="clientes-panel" aria-label="Cadastro de Clientes">
+          <div class="panel-title">Cadastro de Clientes</div>
+          <form id="cliente-form" class="form">
+            <div class="form-row">
+              <label for="cli-nome">Nome Completo</label>
+              <input id="cli-nome" name="nome" type="text" required placeholder="Ex.: Maria Souza" />
+            </div>
+            <div class="form-row">
+              <label for="cli-email">E-mail</label>
+              <input id="cli-email" name="email" type="email" placeholder="exemplo@email.com" />
+            </div>
+            <div class="form-row">
+              <label for="cli-telefone">Telefone</label>
+              <input id="cli-telefone" name="telefone" type="tel" placeholder="(00) 00000-0000" />
+            </div>
+            <div class="form-row">
+              <label for="cli-doc">CPF/CNPJ</label>
+              <input id="cli-doc" name="documento" type="text" placeholder="000.000.000-00" />
+            </div>
+            <div class="form-row">
+              <label for="cli-endereco">Endereço</label>
+              <textarea id="cli-endereco" name="endereco" rows="2" placeholder="Rua, número, bairro, cidade"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="submit" id="cli-salvar">Salvar</button>
+              <button type="button" id="cli-limpar">Limpar</button>
+            </div>
+            <input type="hidden" id="cli-id" />
+          </form>
+
+          <div class="panel-title" style="margin-top:12px">Lista de Clientes</div>
+          <div class="table-wrap">
+            <table class="table" id="clientes-tabela">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Telefone</th>
+                  <th>CPF/CNPJ</th>
+                  <th style="width:120px">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- preenchido via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <aside class="right panel" aria-label="Detalhes">
+        <div class="panel-title">Arm C-1</div>
+        <div class="form-row"><label>Working Mode</label><div id="kpi-mode" class="pill">--</div></div>
+        <div class="form-row"><label>Robot Status</label><div id="kpi-status" class="pill warn">--</div></div>
+        <div class="form-row"><label>Cycle Time</label><div id="kpi-cycle" class="pill">--</div></div>
+        <div class="form-row"><label>Payload User</label><div id="kpi-payload" class="pill">--</div></div>
+      </aside>
+    </main>
+
+    <script src="/assets/app.js"></script>
+  </body>
+  </html>

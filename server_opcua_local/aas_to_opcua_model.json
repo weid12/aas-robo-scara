@@ -1,0 +1,14 @@
+{
+    "Identification": {
+      "Model": "ns=2;s=Identification.Model",
+      "Manufacturer": "ns=2;s=Identification.Manufacturer",
+      "SN": "ns=2;s=Identification.SN",
+      "Code": "ns=2;s=Identification.Code",
+      "ProductName": "ns=2;s=Identification.ProductName",
+      "ProductUri": "ns=2;s=Identification.ProductUri",
+      "SoftwareRevision": "ns=2;s=Identification.SoftwareRevision",
+      "BuildNumber": "ns=2;s=Identification.BuildNumber",
+      "BuildDate": "ns=2;s=Identification.BuildDate"
+    }
+  }
+  
