@@ -47,7 +47,6 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-# Third Party
 from asyncua import Client, ua
 
 # Configuração de Logging
