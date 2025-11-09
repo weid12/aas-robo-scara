@@ -1,3 +1,33 @@
+# ------------------------------------------------------------------------------------------------------------------
+#   SCARA Robot Dashboard
+#   
+#   Módulo que implementa um dashboard web em tempo real para monitoramento de um robô SCARA usando Streamlit.
+#   O sistema fornece visualização de:
+#   1. Status atual do robô (modo de trabalho, estado, tempo de ciclo)
+#   2. Posições das juntas do robô
+#   3. Histórico temporal de métricas selecionadas
+#   4. Dados brutos em formato JSON
+#
+#   Arquitetura do Sistema:
+#   - Frontend: Streamlit dashboard para interface web
+#   - Backend: SQLite para armazenamento de histórico
+#   - Dados: Arquivo JSON local ou REST API para dados em tempo real
+#   - Atualização: Sistema de polling automático com cache inteligente
+#
+#   O fluxo principal de dados é:
+#   1. Carregar configurações e estabelecer conexões
+#   2. Ler dados mais recentes (arquivo/API)
+#   3. Atualizar interface em tempo real
+#   4. Manter histórico no SQLite
+#   5. Gerar visualizações e gráficos
+#
+#   Dependências principais:
+#   - streamlit: Interface web
+#   - pandas/altair: Visualização de dados
+#   - sqlite3: Armazenamento de histórico
+#   - requests: Comunicação REST (opcional)
+# ------------------------------------------------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import json
@@ -9,18 +39,32 @@ from typing import Any, Dict, List, Sequence, Tuple
 import streamlit as st
 
 
-# -------------------- Configuração --------------------
+# ---------------------------- Configuração Global ----------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LATEST = REPO_ROOT / "opcua_client" / "latest_data.json"
 DEFAULT_DB = REPO_ROOT / "data" / "aas_history.sqlite3"
 
-st.set_page_config(page_title="SCARA Dashboard", layout="wide")
+# Configuração da página Streamlit
+st.set_page_config(
+    page_title="SCARA Dashboard",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 
-# -------------------- Acesso a dados --------------------
+# ---------------------------- Funções de Acesso a Dados ----------------------------
 
 def _connect(db_path: Path) -> sqlite3.Connection:
+    """
+    Estabelece conexão com banco SQLite com configuração otimizada.
+    
+    Args:
+        db_path: Caminho para o arquivo do banco de dados
+        
+    Returns:
+        Conexão configurada com row factory
+    """
     con = sqlite3.connect(str(db_path))
     con.row_factory = sqlite3.Row
     return con
@@ -28,6 +72,15 @@ def _connect(db_path: Path) -> sqlite3.Connection:
 
 @st.cache_data(show_spinner=False, ttl=5.0)
 def list_paths(db_path: str) -> List[Tuple[str, str]]:
+    """
+    Lista caminhos disponíveis no banco de histórico.
+    
+    Args:
+        db_path: Caminho do banco SQLite
+        
+    Returns:
+        Lista de tuplas (submodel_name, element_path)
+    """
     if not db_path or not Path(db_path).exists():
         return []
     with _connect(Path(db_path)) as con:
@@ -40,6 +93,18 @@ def list_paths(db_path: str) -> List[Tuple[str, str]]:
 
 @st.cache_data(show_spinner=False, ttl=2.0)
 def load_timeseries(db_path: str, submodel: str, path: str, limit: int = 300) -> List[Tuple[str, float]]:
+    """
+    Carrega série temporal de dados do banco SQLite.
+    
+    Args:
+        db_path: Caminho do banco SQLite
+        submodel: Nome do submodelo
+        path: Caminho do elemento
+        limit: Limite de pontos a serem retornados (padrão: 300)
+        
+    Returns:
+        Lista de tuplas (timestamp, valor) ordenadas por tempo
+    """
     if not db_path or not Path(db_path).exists():
         return []
     with _connect(Path(db_path)) as con:
@@ -61,6 +126,15 @@ def load_timeseries(db_path: str, submodel: str, path: str, limit: int = 300) ->
 
 @st.cache_data(show_spinner=False, ttl=1.0)
 def load_latest(latest_path: str) -> Dict[str, Any]:
+    """
+    Carrega o snapshot mais recente do arquivo JSON.
+    
+    Args:
+        latest_path: Caminho para o arquivo latest_data.json
+        
+    Returns:
+        Dicionário com os dados do snapshot ou vazio em caso de erro
+    """
     p = Path(latest_path)
     if not p.exists():
         return {}
@@ -103,9 +177,19 @@ def load_latest_http(url: str) -> Dict[str, Any] | None:
         return {}
 
 
-# -------------------- Utilitários de UI --------------------
+# ---------------------------- Componentes da Interface ----------------------------
 
 def kpi_pill(text: str, tone: str = "neutral") -> str:
+    """
+    Gera elemento visual para KPIs com esquema de cores semânticas.
+    
+    Args:
+        text: Texto a ser exibido
+        tone: Tom de cor ('ok', 'warn', 'err', 'neutral')
+        
+    Returns:
+        String HTML do elemento visual
+    """
     palette = {
         "ok": "#16c266",
         "warn": "#f39c12",
@@ -120,6 +204,15 @@ def kpi_pill(text: str, tone: str = "neutral") -> str:
 
 
 def classify_status(status_text: str) -> str:
+    """
+    Classifica o status do robô com base em palavras-chave no texto.
+    
+    Args:
+        status_text: Texto descritivo do status do robô
+        
+    Returns:
+        Tom correspondente ('ok', 'warn', 'err')
+    """
     s = (status_text or "").lower()
     if any(x in s for x in ("estop", "fault", "error")):
         return "err"
@@ -129,6 +222,12 @@ def classify_status(status_text: str) -> str:
 
 
 def col_metrics(latest: Dict[str, Any]) -> None:
+    """
+    Exibe as métricas principais do status atual do robô.
+    
+    Args:
+        latest: Dicionário com os dados mais recentes do robô
+    """
     op = latest.get("OperationalData", {}) if isinstance(latest, dict) else {}
     tech = latest.get("TechnicalData", {}) if isinstance(latest, dict) else {}
 
@@ -149,6 +248,15 @@ def col_metrics(latest: Dict[str, Any]) -> None:
 
 
 def joints_values(latest: Dict[str, Any]) -> List[str]:
+    """
+    Calcula os valores médios das juntas do robô a partir dos dados mais recentes.
+    
+    Args:
+        latest: Dicionário com os dados mais recentes do robô
+        
+    Returns:
+        Lista de strings com os valores médios das juntas formatados em graus
+    """
     op = latest.get("OperationalData", {}) if isinstance(latest, dict) else {}
     labels = ["JointPosition1", "JointPosition2", "JointPosition3", "JointPosition4"]
     out: List[str] = []
@@ -166,6 +274,12 @@ def joints_values(latest: Dict[str, Any]) -> List[str]:
 
 
 def plot_timeseries(rows: Sequence[Tuple[str, float]]) -> None:
+    """
+    Plota a série temporal de dados usando Altair ou Streamlit em caso de erro.
+    
+    Args:
+        rows: Sequência de tuplas (timestamp, valor) a serem plotadas
+    """
     try:
         import pandas as pd  # type: ignore
         import altair as alt  # type: ignore
@@ -186,26 +300,61 @@ def plot_timeseries(rows: Sequence[Tuple[str, float]]) -> None:
         st.line_chart([v for (_, v) in rows], height=260)
 
 
-# -------------------- Aplicação --------------------
+# ---------------------------- Loop Principal ----------------------------
 
 def main() -> None:
+    """
+    Função principal do dashboard que implementa:
+    1. Setup da interface e controles
+    2. Loop de atualização em tempo real
+    3. Gestão de estado e cache
+    4. Renderização das visualizações
+    """
+    # Título e configuração
     st.title("SCARA Dashboard")
+    
+    # Barra lateral com controles
+    with st.sidebar:
+        st.header("Configuração")
+        source = st.radio(
+            "Fonte de dados",
+            ["Arquivo local", "REST API"],
+            index=0,
+            help="Escolha a fonte dos dados em tempo real"
+        )
+        
+        # Campos de configuração com validação
+        latest_path = st.text_input(
+            "Arquivo de snapshot",
+            str(DEFAULT_LATEST),
+            help="Caminho para latest_data.json"
+        )
+        
+        api_url = st.text_input(
+            "URL da API",
+            "http://127.0.0.1:8000/api/latest",
+            help="Endpoint REST para dados em tempo real"
+        )
+        
+        db_path = st.text_input(
+            "Banco de dados",
+            str(DEFAULT_DB),
+            help="Caminho para o banco SQLite de histórico"
+        )
 
-    # Controles da barra lateral
-    st.sidebar.header("Configuração")
-    source = st.sidebar.radio("Fonte do snapshot", ["Arquivo local", "REST API"], index=0)
-    latest_path = st.sidebar.text_input("Arquivo de snapshot (latest_data.json)", str(DEFAULT_LATEST))
-    api_url = st.sidebar.text_input("Endpoint REST (/api/latest)", "http://127.0.0.1:8000/api/latest")
-    db_path = st.sidebar.text_input("Banco SQLite (aas_history.sqlite3)", str(DEFAULT_DB))
-    # Seções fixas / espaços reservados
-    st.subheader("Status Atual")
-    kpi_ph = st.empty()
-    joints_ph = st.expander("Juntas (médias)", expanded=True)
+    # Setup dos containers principais
+    status_container = st.container()
+    with status_container:
+        st.subheader("Status Atual")
+        kpi_ph = st.empty()
+        joints_ph = st.expander("Juntas (médias)", expanded=True)
+
     # Placeholders persistentes para juntas (sobrescrevem o valor no mesmo lugar)
     with joints_ph:
         _joint_cols = st.columns(4)
         joint_ph = [_joint_cols[i].empty() for i in range(4)]
 
+    # Seções fixas / espaços reservados
     st.subheader("Histórico")
     paths = list_paths(db_path)
     if not paths:
@@ -231,6 +380,12 @@ def main() -> None:
     caption_ph = st.empty()
 
     def render_once() -> None:
+        """
+        Renderiza uma vez os componentes principais:
+        - Atualiza as métricas do robô
+        - Plota a série temporal selecionada
+        - Exibe o JSON bruto dos dados mais recentes
+        """
         # Escolhe a fonte do snapshot mais recente
         latest: Dict[str, Any]
         if source == "REST API":
@@ -260,6 +415,7 @@ def main() -> None:
 
         with st.expander("JSON bruto (latest_data.json)"):
             st.json(latest)
+
     # Loop de atualização contínua (sem recarregar o navegador)
     render_once()
     time.sleep(1.0)
@@ -267,6 +423,8 @@ def main() -> None:
         st.rerun()
     except Exception:
         st.experimental_rerun()
+
+
 if __name__ == "__main__":
     main()
 

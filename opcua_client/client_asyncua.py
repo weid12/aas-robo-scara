@@ -1,20 +1,42 @@
-﻿# ------------------------------------------------------------------------------------------------------------------
-#   Módulo cliente para conectar a um servidor OPC UA, ler dados de um ativo (robô SCARA), mapeá-los para submodelos 
-#   do Asset Administration Shell (AAS), e persistir os dados.
-#   Este script pode ser executado de duas formas:
-#   1. Em modo de ciclo único (--once"), onde ele lê os dados, salva e termina.
-#   2. Em modo de loop contínuo, onde ele repete o ciclo de leitura e salvamento em um intervalo configurável.
-#   A configuração é carregada de múltiplas fontes com a seguinte ordem de precedência:
-#   1. Argumentos de linha de comando (CLI) -
-#   2. Variáveis de ambiente.
-#   3. Arquivo de configuração JSON (config opcua json").
-#   O fluxo principal de dados é:
-#   Conectar ao servidor OPC UA;
-#   Ler os nós (nodes) OPC UA especificados no arquivo de configuração;
-#   Mapear os valores lidos para uma estrutura de dicionário que representa os submodelos AAS;
-#   Salvar o snapshot mais recente em um arquivo JSON ("latest_data.json").
-# ------------------------------------------------------------------------------------------------------------------
+﻿"""
+OPC UA Client for Asset Administration Shell (AAS)
+================================================
 
+Este módulo implementa um cliente OPC UA que interage com um robô SCARA,
+coletando dados e mapeando-os para a estrutura do Asset Administration Shell (AAS).
+
+Funcionalidades Principais:
+-------------------------
+1. Conexão assíncrona com servidor OPC UA
+2. Leitura configurável de nodes OPC UA
+3. Mapeamento automático para estrutura AAS
+4. Persistência multi-formato (JSON, SQLite)
+5. Atualização automática de submodelos AAS
+
+Modos de Execução:
+----------------
+- Modo Single-Shot (--once): Uma única execução
+- Modo Contínuo: Loop com intervalo configurável
+
+Configuração (ordem de precedência):
+--------------------------------
+1. Argumentos CLI (máxima prioridade)
+2. Variáveis de ambiente
+3. Arquivo config_opcua.json (mínima prioridade)
+
+Fluxo de Dados:
+-------------
+1. Conexão OPC UA
+2. Leitura de nodes configurados
+3. Mapeamento para estrutura AAS
+4. Persistência em múltiplos formatos
+
+Autor: [Seu Nome]
+Versão: 1.0.0
+Data: Novembro 2023
+"""
+
+# Standard Library
 import asyncio
 import json
 import datetime
@@ -25,7 +47,15 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+# Third Party
 from asyncua import Client, ua
+
+# Configuração de Logging
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("opcua_client")
 
 # Configuração do logging - nível pode ser ajustado via variável de ambiente LOG_LEVEL
 logging.basicConfig(
@@ -318,7 +348,16 @@ async def _resolve_leaf(client: Client, spec: Any) -> Any:
 
     return _to_builtin(spec)
 
-# ---------- Percurso do dicionário de configuração ----------
+# ==================================================================================================================
+# Processamento da Configuração e Mapeamento OPC UA -> AAS
+# ==================================================================================================================
+"""
+Esta seção implementa o mapeamento entre OPC UA e Asset Administration Shell:
+- Percorre recursivamente a estrutura de configuração
+- Resolve valores OPC UA para cada nó folha
+- Mantém a estrutura hierárquica dos submodelos AAS
+- Aplica transformações e validações configuradas
+"""
 
 async def _walk(client: Client, node: Any) -> Any:
     """Percorre estrutura de dados resolvendo todos os valores folha."""
@@ -344,7 +383,26 @@ async def map_opcua_to_submodels(client: Client, config: Dict[str, Any]) -> Dict
     """
     return await _walk(client, config)
 
-# ---------- Cliente principal ----------
+# ==================================================================================================================
+# Cliente Principal e Ciclo de Execução
+# ==================================================================================================================
+"""
+Esta seção contém a lógica principal do cliente OPC UA:
+1. Configuração e inicialização:
+   - Parsing de argumentos CLI
+   - Carregamento de configurações (CLI, env, arquivo)
+   - Setup de logging
+
+2. Ciclo de execução:
+   - Conexão ao servidor OPC UA
+   - Leitura periódica de dados
+   - Mapeamento para estrutura AAS
+   - Persistência em múltiplos destinos
+
+3. Modos de operação:
+   - Ciclo único (--once)
+   - Loop contínuo com intervalo configurável
+"""
 
 def _map_xs_to_coerce(t: Optional[str]) -> Optional[str]:
     """Mapeia tipos xs:... para tipos básicos internos."""
