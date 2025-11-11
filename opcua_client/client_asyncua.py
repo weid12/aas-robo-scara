@@ -331,7 +331,7 @@ async def _resolve_leaf(client: Client, spec: Any) -> Any:
 """
 Esta seção implementa o mapeamento entre OPC UA e Asset Administration Shell:
 - Percorre recursivamente a estrutura de configuração
-- Resolve valores OPC UA para cada nó folha
+- Resolve valores OPC UA para cada nó
 - Mantém a estrutura hierárquica dos submodelos AAS
 - Aplica transformações e validações configuradas
 """

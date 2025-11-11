@@ -180,18 +180,29 @@
   border-radius: 2px;
 }
 
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
 .sectionTitle {
   color: var(--wic-sidebar-muted);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0 6px 6px;
+  flex-shrink: 0;
 }
 
 .nav {
   display: grid;
   gap: 6px;
   padding: 2px 0;
+  align-content: start;
 }
 
 .item {
@@ -259,8 +270,44 @@
   justify-content: center;
 }
 
+.closed .sectionTitle {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.closed .mainContent {
+  align-items: center;
+}
+
 .bottom {
   margin-top: auto;
+  flex-shrink: 0;
+  padding-top: 8px;
+  transition: all 0.25s ease;
+}
+
+.closed .bottom {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.closed .bottom .divider {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.userSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.closed .userSection {
+  align-items: center;
+  gap: 10px;
 }
 
 .userRow {
@@ -268,6 +315,12 @@
   align-items: center;
   gap: 12px;
   padding: 8px 6px 0;
+  transition: all 0.25s ease;
+}
+
+.closed .userRow {
+  justify-content: center;
+  padding: 8px 0 0;
 }
 
 .userIcon {
@@ -281,18 +334,35 @@
   font-weight: 600;
   font-size: 1rem;
   flex: 0 0 40px;
+  transition: all 0.25s ease;
+}
+
+.closed .userIcon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 36px;
+  font-size: 0.9rem;
 }
 
 .userActions {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  transition: opacity 0.2s ease, width 0.25s ease;
+}
+
+.closed .userActions {
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
+  overflow: hidden;
 }
 
 .userName {
   font-size: 0.86rem;
   font-weight: 600;
   color: var(--wic-sidebar-fg);
+  white-space: nowrap;
 }
 
 .actText {
@@ -307,6 +377,7 @@
   cursor: pointer;
   font-size: 0.8rem;
   transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
 }
 
 .actText:hover {
@@ -315,6 +386,41 @@
 
 .logoutButton svg {
   font-size: 0.9rem;
+}
+
+.closed .actText span {
+  display: none;
+}
+
+.logoutButtonCollapsed {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--wic-sidebar-fg);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.logoutButtonCollapsed:hover {
+  background: rgba(194, 37, 92, 0.8);
+  border-color: rgba(194, 37, 92, 1);
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.closed .logoutButtonCollapsed {
+  display: flex;
+}
+
+.closed .logoutButton {
+  display: none;
 }
 
 .tip {
@@ -377,8 +483,17 @@
     height: 12px;
   }
 
+  .mainContent {
+    flex: 1;
+    min-height: 0;
+  }
+
   .nav {
     padding-bottom: 24px;
+  }
+
+  .bottom {
+    flex-shrink: 0;
   }
 }
 

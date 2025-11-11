@@ -1,5 +1,3 @@
-# opcua_list_and_search.py
-# Requisitos: pip install asyncua
 import asyncio
 import json
 import csv

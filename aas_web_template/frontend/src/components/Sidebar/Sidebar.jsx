@@ -53,50 +53,64 @@ export default function Sidebar() {
 
         <div className={styles.divider} />
 
-        <div className={styles.sectionTitle}>Navegacao</div>
+        <div className={styles.mainContent}>
+          <div className={styles.sectionTitle}>Navegacao</div>
 
-        <nav className={styles.nav}>
-          {MENU.map((item) => (
-            <NavLink
-              key={item.key}
-              to={item.to}
-              aria-label={item.label}
-              className={({ isActive }) =>
-                `${styles.item} ${styles.tip} ${isActive ? styles.active : ""}`
-              }
-              title={open ? "" : item.label}
-              end
-            >
-              <span className={styles.icon}>{item.icon}</span>
-              <span className={styles.label}>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
+          <nav className={styles.nav}>
+            {MENU.map((item) => (
+              <NavLink
+                key={item.key}
+                to={item.to}
+                aria-label={item.label}
+                className={({ isActive }) =>
+                  `${styles.item} ${styles.tip} ${isActive ? styles.active : ""}`
+                }
+                title={open ? "" : item.label}
+                end
+              >
+                <span className={styles.icon}>{item.icon}</span>
+                <span className={styles.label}>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
 
         <div className={styles.bottom}>
           <div className={styles.divider} />
 
-          <div className={styles.userRow}>
-            <div
-              className={`${styles.userIcon} ${styles.tip}`}
-              aria-label={userLabel}
-              title={open ? "" : userLabel}
-            >
-              <span aria-hidden="true">{userInitial}</span>
+          <div className={styles.userSection}>
+            <div className={styles.userRow}>
+              <div
+                className={`${styles.userIcon} ${styles.tip}`}
+                aria-label={userLabel}
+                title={open ? "" : userLabel}
+              >
+                <span aria-hidden="true">{userInitial}</span>
+              </div>
+
+              <div className={styles.userActions}>
+                <span className={styles.userName}>{userLabel}</span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={`${styles.actText} ${styles.logoutButton}`}
+                  aria-label="Encerrar sessao"
+                >
+                  <FaSignOutAlt />
+                  <span>Sair</span>
+                </button>
+              </div>
             </div>
 
-            <div className={styles.userActions}>
-              <span className={styles.userName}>{userLabel}</span>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className={`${styles.actText} ${styles.logoutButton}`}
-                aria-label="Encerrar sessao"
-              >
-                <FaSignOutAlt />
-                <span>Sair</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className={`${styles.logoutButtonCollapsed} ${styles.tip}`}
+              aria-label="Encerrar sessao"
+              title={open ? "" : "Sair"}
+            >
+              <FaSignOutAlt />
+            </button>
           </div>
         </div>
       </aside>
