@@ -9,8 +9,8 @@ export default function WorkInstructionControl() {
       <main className={styles.content}>
         <header className={styles.header}>
           <h1 className={styles.brandLabel}>
-            <span className={styles.brandSigla}>WIC</span>
-            <span className={styles.brandName}>Work_Instruction_Control</span>
+            <span className={styles.brandSigla}>AAS</span>
+            <span className={styles.brandName}>Asset Administration Shell Robô Scara</span>
           </h1>
 
           <span className={styles.statusNote}>Em desenvolvimento</span>

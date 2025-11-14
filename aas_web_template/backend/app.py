@@ -3,6 +3,7 @@ from flask_cors import CORS
 from config import CORS_ORIGINS, PORT
 from login import login_bp
 from hr_proxy import hr_bp
+from data_routes import data_bp
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ else:
 # Blueprints
 app.register_blueprint(login_bp)
 app.register_blueprint(hr_bp)
+app.register_blueprint(data_bp)
 
 # Healthcheck
 @app.route('/')

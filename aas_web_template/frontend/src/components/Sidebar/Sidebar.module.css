@@ -307,7 +307,10 @@
 
 .closed .userSection {
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 12px;
+  padding: 0;
+  width: 100%;
 }
 
 .userRow {
@@ -320,7 +323,9 @@
 
 .closed .userRow {
   justify-content: center;
-  padding: 8px 0 0;
+  padding: 0;
+  gap: 0;
+  width: 100%;
 }
 
 .userIcon {
@@ -335,13 +340,15 @@
   font-size: 1rem;
   flex: 0 0 40px;
   transition: all 0.25s ease;
+  margin: 0;
 }
 
 .closed .userIcon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 36px;
   font-size: 0.9rem;
+  margin: 0;
 }
 
 .userActions {
@@ -363,6 +370,8 @@
   font-weight: 600;
   color: var(--wic-sidebar-fg);
   white-space: nowrap;
+  /* align with left padding of logout button */
+  padding-left: 10px;
 }
 
 .actText {
@@ -406,6 +415,8 @@
   font-size: 0.9rem;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .logoutButtonCollapsed:hover {

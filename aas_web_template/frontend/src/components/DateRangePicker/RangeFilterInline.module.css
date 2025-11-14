@@ -1,0 +1,70 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(37, 37, 48, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #fff;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.input {
+  appearance: none;
+  background: rgba(37, 37, 48, 0.6);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.sep {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(37, 37, 48, 0.6);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(37, 37, 48, 0.85);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btnPrimary {
+  background: rgba(194, 37, 92, 0.9);
+  border-color: rgba(194, 37, 92, 1);
+  transition: background 0.18s ease, border-color 0.18s ease, filter 0.18s ease, color 0.18s ease;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--wic-sidebar-highlight);
+  border-color: transparent;
+  color: #ffffff;
+}

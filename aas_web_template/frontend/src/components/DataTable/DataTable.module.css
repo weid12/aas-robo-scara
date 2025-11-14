@@ -1,0 +1,106 @@
+.container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  background: rgba(37, 37, 48, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.thead {
+  position: sticky;
+  top: 0;
+  background: rgba(37, 37, 48, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.th:hover {
+  background: rgba(73, 73, 95, 0.3);
+}
+
+.thContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sortIcon {
+  font-size: 0.875rem;
+  color: #ff7746;
+}
+
+.tbody {
+  background: transparent;
+}
+
+.tr {
+  transition: background 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tr:hover {
+  background: rgba(73, 73, 95, 0.2);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.td {
+  padding: 0.875rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  vertical-align: middle;
+}
+
+.empty {
+  padding: 3rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+.empty p {
+  margin: 0;
+}
+
+/* Scrollbar customizado */
+.container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
