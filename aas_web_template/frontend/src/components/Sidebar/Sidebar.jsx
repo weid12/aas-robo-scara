@@ -6,10 +6,10 @@ import styles from "./Sidebar.module.css";
 import { useAuth } from "../../login";
 
 const MENU = [
-  { key: "hub", label: "Hub", icon: <FaHome />, to: "/hub" },
+  { key: "hub", label: "Hub", collapsedLabel: "Hub", icon: <FaHome />, to: "/hub" },
   { key: "register", label: "Register", icon: <FaClipboardList />, to: "/register" },
   { key: "data", label: "Data", icon: <FaChartBar />, to: "/data" },
-  { key: "sequencial-plan", label: "Sequencial Plan", icon: <FaProjectDiagram />, to: "/sequencial-plan" },
+  { key: "sequencial-plan", label: "Sequencial Plan", collapsedLabel: "Plan", icon: <FaProjectDiagram />, to: "/sequencial-plan" },
 ];
 
 export default function Sidebar() {
@@ -57,21 +57,25 @@ export default function Sidebar() {
           <div className={styles.sectionTitle}>Navegacao</div>
 
           <nav className={styles.nav}>
-            {MENU.map((item) => (
-              <NavLink
-                key={item.key}
-                to={item.to}
-                aria-label={item.label}
-                className={({ isActive }) =>
-                  `${styles.item} ${styles.tip} ${isActive ? styles.active : ""}`
-                }
-                title={open ? "" : item.label}
-                end
-              >
-                <span className={styles.icon}>{item.icon}</span>
-                <span className={styles.label}>{item.label}</span>
-              </NavLink>
-            ))}
+            {MENU.map((item) => {
+              const collapsedLabel = item.collapsedLabel || item.label;
+              const currentLabel = open ? item.label : collapsedLabel;
+              return (
+                <NavLink
+                  key={item.key}
+                  to={item.to}
+                  aria-label={currentLabel}
+                  className={({ isActive }) =>
+                    `${styles.item} ${styles.tip} ${isActive ? styles.active : ""}`
+                  }
+                  title={open ? "" : collapsedLabel}
+                  end
+                >
+                  <span className={styles.icon}>{item.icon}</span>
+                  <span className={styles.label}>{item.label}</span>
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
 
@@ -94,7 +98,8 @@ export default function Sidebar() {
                   type="button"
                   onClick={handleLogout}
                   className={`${styles.actText} ${styles.logoutButton}`}
-                  aria-label="Encerrar sessao"
+                  aria-label="Sair"
+                  title={open ? "" : "Sair"}
                 >
                   <FaSignOutAlt />
                   <span>Sair</span>
@@ -106,7 +111,7 @@ export default function Sidebar() {
               type="button"
               onClick={handleLogout}
               className={`${styles.logoutButtonCollapsed} ${styles.tip}`}
-              aria-label="Encerrar sessao"
+              aria-label="Sair"
               title={open ? "" : "Sair"}
             >
               <FaSignOutAlt />

@@ -55,31 +55,16 @@
   padding: 6px 14px;
 }
 
-.placeholder {
-  display: grid;
+.dashboard {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-.card {
-  background: rgba(23, 23, 38, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
-}
-
-.card h2 {
-  font-size: 1.35rem;
-  margin-bottom: 14px;
-}
-
-.card ul {
-  margin: 0;
-  padding-left: 18px;
-  display: grid;
-  gap: 10px;
-  color: #d2d2e5;
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 @media (max-width: 960px) {
