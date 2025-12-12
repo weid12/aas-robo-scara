@@ -1,0 +1,558 @@
+/* Tipografia comum para páginas */
+
+.pageTitle {
+  margin: 0;
+  font-size: clamp(1.9rem, 2.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #f4f4f8;
+  line-height: 1.15;
+}
+
+.pageSubtitle {
+  margin: 0.35rem 0 0 0;
+  font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+  font-weight: 500;
+  color: rgba(244, 244, 248, 0.7);
+  line-height: 1.35;
+}
+
+.registerTitle {
+  font-size: clamp(1.7rem, 2vw, 2.0rem);
+}
+
+.tableSection {
+    padding: 0 1rem 1.5rem 1rem;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-size: 1.1rem;
+}
+
+.userTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(30, 30, 40, 0.6);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.userTable thead {
+    background: rgba(50, 50, 65, 0.95);
+}
+
+.userTable th {
+    padding: 1.2rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid rgba(233, 79, 136, 0.3);
+}
+
+.userTable td {
+    padding: 1rem;
+    color: #e0e0e0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.95rem;
+}
+
+.userTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.userTable tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.statusOn {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.statusOff {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.statusButton {
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-block;
+    background: none;
+    font-family: inherit;
+}
+
+.statusButton:hover {
+    transform: scale(1.05);
+    border-color: currentColor;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.statusButton:active {
+    transform: scale(0.98);
+}
+
+.actionBar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.2rem 1.5rem 0.5rem 1.5rem;
+}
+
+.newUserButton {
+    background: linear-gradient(135deg, #e94f88, #d63d75);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.newUserButton:hover {
+    background: linear-gradient(135deg, #f05a93, #e94f88);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(233, 79, 136, 0.4);
+}
+
+.editButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.editButton:hover {
+    opacity: 1;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modalContent {
+    background: linear-gradient(145deg, rgba(30, 30, 42, 0.98), rgba(20, 20, 32, 0.98));
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(233, 79, 136, 0.15);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modalHeader h2 {
+    color: #e94f88;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(135deg, #e94f88, #f06292);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s ease;
+    padding: 0.25rem;
+    border-radius: 6px;
+}
+
+.closeButton:hover {
+    color: #e94f88;
+    background: rgba(233, 79, 136, 0.1);
+    transform: rotate(90deg);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    color: #b0b0c0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.formGroup input {
+    background: rgba(10, 10, 20, 0.4);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.formGroup input:hover {
+    border-color: rgba(233, 79, 136, 0.3);
+    background: rgba(10, 10, 20, 0.5);
+}
+
+.formGroup input:focus {
+    border-color: #e94f88;
+    box-shadow: 0 0 0 3px rgba(233, 79, 136, 0.15);
+    background: rgba(10, 10, 20, 0.6);
+}
+
+.formGroup input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(10, 10, 20, 0.2);
+}
+
+.formGroup input::placeholder {
+    color: #666;
+}
+
+.inputError {
+    border-color: #ff4444 !important;
+    background: rgba(255, 68, 68, 0.05) !important;
+}
+
+.error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.submitButton {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #e94f88, #d63d75);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 250px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(233, 79, 136, 0.3);
+}
+
+.submitButton:hover {
+    background: linear-gradient(135deg, #f05a93, #e94f88);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(233, 79, 136, 0.45);
+}
+
+.submitButton:active {
+    transform: translateY(0);
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.success {
+    background: rgba(76, 175, 80, 0.15);
+    border: 1.5px solid rgba(76, 175, 80, 0.4);
+    color: #4caf50;
+}
+
+.message.error {
+    background: rgba(255, 68, 68, 0.15);
+    border: 1.5px solid rgba(255, 68, 68, 0.4);
+    color: #ff6b6b;
+}
+
+/* Scrollbar Styling */
+.modalContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+    background: rgba(233, 79, 136, 0.3);
+    border-radius: 10px;
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+    background: rgba(233, 79, 136, 0.5);
+}
+
+/* New Table Styles with lightswind components */
+.userCell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.userAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e94f88, #d63d75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.userName {
+    color: #e0e0e0;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.userEmail {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.roleText {
+    color: #b0b0c0;
+    font-size: 0.9rem;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1.5px solid;
+}
+
+.statusActive {
+    background: rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.4);
+    color: #4caf50;
+}
+
+.statusInactive {
+    background: rgba(136, 136, 136, 0.15);
+    border-color: rgba(136, 136, 136, 0.3);
+    color: #888;
+}
+
+.authBadge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1.5px solid;
+}
+
+.authAdmin {
+    background: rgba(233, 79, 136, 0.15);
+    border-color: rgba(233, 79, 136, 0.4);
+    color: #e94f88;
+}
+
+.authUser {
+    background: rgba(100, 181, 246, 0.15);
+    border-color: rgba(100, 181, 246, 0.4);
+    color: #64b5f6;
+}
+
+.lastActive {
+    color: #a0a0b0;
+    font-size: 0.9rem;
+}
+
+.actionsCell {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.actionIcon {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionIcon:hover {
+    background: rgba(233, 79, 136, 0.1);
+    color: #e94f88;
+}
+
+.actionIcon svg {
+    stroke: currentColor;
+}
+
+.deleteIcon:hover {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+}
+
+.tableFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    margin-top: 1rem;
+    background: rgba(30, 30, 40, 0.4);
+    border-radius: 8px;
+}
+
+.footerInfo {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.footerActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.footerButton {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #b0b0c0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.footerButton:not(:disabled):hover {
+    background: rgba(233, 79, 136, 0.1);
+    border-color: #e94f88;
+    color: #e94f88;
+}
+
+.footerButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

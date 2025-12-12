@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------------------------------------------
+#   Cliente OPC UA simples para leitura de dados.
+#   Conecta ao servidor local e exibe a árvore de nós ou executa leituras cíclicas para debug.
+# ------------------------------------------------------------------------------------------------------------------
+
 import asyncio
 import argparse
 import json

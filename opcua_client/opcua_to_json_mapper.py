@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------------------------------------------
+#   Mapeador de tipos OPC UA para JSON.
+#   Converte objetos e tipos complexos da biblioteca asyncua para tipos nativos Python serializáveis em JSON.
+# ------------------------------------------------------------------------------------------------------------------
+
 # opcua_client/opcua_to_json_mapper.py
 import datetime
 from typing import Any, Dict, List, Optional, Tuple

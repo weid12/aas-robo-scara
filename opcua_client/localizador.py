@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------------------------------------------
+#   Ferramenta de indexação e busca de nós OPC UA.
+#   Navega recursivamente pelo servidor OPC UA, indexa todos os nós em JSONL/CSV e permite busca interativa.
+# ------------------------------------------------------------------------------------------------------------------
+
 import asyncio
 import json
 import csv

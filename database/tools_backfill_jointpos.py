@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------------------------------------------
+#   Ferramenta de migração/backfill de dados.
+#   Normaliza dados antigos de posição das juntas (JointPosition) no banco de dados SQLite.
+# ------------------------------------------------------------------------------------------------------------------
+
 import sqlite3
 import json
 from pathlib import Path

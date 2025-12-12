@@ -1,0 +1,180 @@
+.container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.housing {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    background: linear-gradient(145deg, #f4d03f, #d4af37);
+    border-radius: 16px;
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.button {
+    position: relative;
+    top: -5px;
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle at 35% 35%, #ff5252, #d32f2f);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Disarmed state - button raised */
+.button.disarmed {
+    box-shadow:
+        0 8px 0 #b71c1c,
+        0 12px 20px rgba(0, 0, 0, 0.4),
+        inset 0 3px 8px rgba(255, 255, 255, 0.4);
+    transform: translateY(0);
+}
+
+.button.disarmed:hover {
+    background: radial-gradient(circle at 35% 35%, #ff6b6b, #e53935);
+}
+
+.button.disarmed:active {
+    transform: translateY(4px);
+    box-shadow:
+        0 4px 0 #b71c1c,
+        0 6px 12px rgba(0, 0, 0, 0.4),
+        inset 0 3px 8px rgba(255, 255, 255, 0.4);
+}
+
+/* Armed state - button pressed */
+.button.armed {
+    background: radial-gradient(circle at 35% 35%, #d32f2f, #b71c1c);
+    box-shadow:
+        0 2px 0 #8b0000,
+        0 4px 8px rgba(0, 0, 0, 0.5),
+        inset 0 2px 6px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(233, 79, 136, 0.6);
+    transform: translateY(6px);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 2px 0 #8b0000,
+            0 4px 8px rgba(0, 0, 0, 0.5),
+            inset 0 2px 6px rgba(0, 0, 0, 0.5),
+            0 0 20px rgba(233, 79, 136, 0.6);
+    }
+
+    50% {
+        box-shadow:
+            0 2px 0 #8b0000,
+            0 4px 8px rgba(0, 0, 0, 0.5),
+            inset 0 2px 6px rgba(0, 0, 0, 0.5),
+            0 0 30px rgba(233, 79, 136, 0.9);
+    }
+}
+
+.button::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.statusIndicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4caf50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    z-index: 3;
+    transition: all 0.3s ease;
+}
+
+.statusIndicator.armed {
+    background: #e94f88;
+    box-shadow: 0 0 12px rgba(233, 79, 136, 0.8);
+    animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+/*
+.label {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.label.armed {
+    color: #e94f88;
+}
+*/
+/* Resize button for Hub page integration */
+:global(.emergency-button-hub) .container {
+    width: 100px;
+    height: 100px;
+}
+
+:global(.emergency-button-hub) .housing {
+    border-radius: 10px;
+}
+
+:global(.emergency-button-hub) .button {
+    width: 60px;
+    height: 60px;
+}
+
+:global(.emergency-button-hub) .statusIndicator {
+    width: 12px;
+    height: 12px;
+    top: 6px;
+    right: 6px;
+}
+
+:global(.emergency-button-hub) .label {
+    font-size: 0.7rem;
+    bottom: 6px;
+}

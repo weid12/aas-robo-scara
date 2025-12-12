@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------------------------------------------
+#   Exportador de arquivos AASX.
+#   Gera um pacote AASX válido contendo os submodelos AAS a partir dos arquivos JSON locais.
+# ------------------------------------------------------------------------------------------------------------------
+
 from __future__ import annotations
 
 import io
