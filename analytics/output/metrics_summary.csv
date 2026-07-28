@@ -1,0 +1,16 @@
+metrica,chave,valor
+Latência OPC UA → JSON,unit,segundos
+Latência OPC UA → JSON,warning,Arquivo desatualizado (430937.5s). Robô offline?
+Latência OPC UA → JSON,current_time,2026-03-18T20:24:15.250761+00:00
+Latência OPC UA → JSON,measured_at,2026-03-23T20:06:32.701239+00:00
+Taxa de Coleta,unit,amostras/segundo
+Taxa de Coleta,periodo_h,1
+Taxa de Coleta,warning,Nenhum registro encontrado no período especificado
+Uptime do Sistema,unit,segundos
+Uptime do Sistema,start_time,2026-03-18T16:02:10.563704
+Uptime do Sistema,current_time,2026-03-18T20:24:15.250761+00:00
+Uptime do Sistema,uptime_s,1324.69
+Uptime do Sistema,uptime_formatado,0h 22m 4s
+Throughput API REST,endpoint,/api/robot/state/latest
+Throughput API REST,n_requisicoes,20
+Throughput API REST,error,Não foi possível conectar a http://localhost:5000/api/robot/state/latest. Backend está rodando?

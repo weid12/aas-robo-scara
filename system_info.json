@@ -1,0 +1,124 @@
+{
+  "_metadata": {
+    "collected_at": "2026-07-27T18:26:04.791320+00:00",
+    "script": "collect_system_info.py",
+    "project": "AAS Robô SCARA"
+  },
+  "1_controller": {
+    "model": "ts2_80-S1-D25-L200-floor-R4-V7",
+    "manufacturer": "Staubli",
+    "serial_number": "ts2_80-S1-D25-L200-floor-R4-V7",
+    "product_name": "Staubli F-21-0029073-C-012 robot OpcUa server",
+    "firmware_version": "2.0.0",
+    "build_number": "0",
+    "build_date": "2022-10-27T01:05:17"
+  },
+  "2_gateway": {
+    "hostname": "AZ-MF10-NE100J0",
+    "os": "Windows-11-10.0.26200-SP0",
+    "os_version": "10.0.26200",
+    "architecture": "AMD64",
+    "processor": "Intel64 Family 6 Model 141 Stepping 1, GenuineIntel",
+    "nota": "Instale 'psutil' para detalhes de CPU/RAM: pip install psutil",
+    "ram_total_gb": 15.74,
+    "cpu_cores_logical": 16
+  },
+  "3_network": {
+    "topology": {
+      "opcua_server_real": "opc.tcp://192.168.0.102:4880/Staubli",
+      "opcua_server_local": "opc.tcp://0.0.0.0:4842",
+      "opcua_server_republish": "opc.tcp://0.0.0.0:4881",
+      "web_backend": "http://localhost:5000",
+      "web_frontend": "http://localhost:5173"
+    },
+    "interfaces": [
+      {
+        "name": "Wi-Fi",
+        "speed": "173.3 Mbps",
+        "mac": "4E-CA-F7-0B-8D-62"
+      },
+      {
+        "name": "vEthernet (Default Switch)",
+        "speed": "10 Gbps",
+        "mac": "00-15-5D-C9-14-46"
+      }
+    ]
+  },
+  "4_software_versions": {
+    "python": "3.12.5 (tags/v3.12.5:ff3bc82, Aug  6 2024, 20:45:27) [MSC v.1940 64 bit (AMD64)]",
+    "sqlite": "3.45.3",
+    "sqlite_driver": "2.6.0",
+    "asyncua": "1.1.6",
+    "flask": "3.0.3",
+    "fastapi": "0.135.1",
+    "uvicorn": "0.41.0",
+    "sqlalchemy": "2.0.41",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.10",
+    "typescript": "^5.6.3",
+    "nodejs": "v20.17.0",
+    "npm": "não detectado"
+  },
+  "5_polling_config": {
+    "mode": "subscription",
+    "enabled": true,
+    "publishing_interval_ms": 200,
+    "write_interval_s": 0.5,
+    "polling_interval_s": 0.01,
+    "descricao": "Push-based: servidor envia dados a cada 200ms. Escrita em disco/DB a cada 0.5s."
+  },
+  "6_monitored_nodes": {
+    "total_discovered": 1197,
+    "actively_monitored": 33,
+    "nodeids": [
+      "ns=0;i=2257",
+      "ns=0;i=2258",
+      "ns=0;i=2259",
+      "ns=0;i=2261",
+      "ns=0;i=2262",
+      "ns=0;i=2264",
+      "ns=0;i=2265",
+      "ns=0;i=2266",
+      "ns=1;s=Robot:Controller:System:PayloadUser:Mass",
+      "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position",
+      "ns=1;s=Robot:Controller:System:RobotStatus:Robot Status",
+      "ns=1;s=Robot:Controller:System:SafetyFault:Safety Fault",
+      "ns=1;s=Robot:Controller:System:SafetyFaultCode:Safety Fault Code",
+      "ns=1;s=Robot:Controller:System:SafetyStatus:Safety Status",
+      "ns=1;s=Robot:Controller:System:WorkingMode:Working Mode",
+      "ns=1;s=Robot:Controller:Versions:System:CycleTime",
+      "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe1_temp",
+      "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe2_temp",
+      "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe3_temp",
+      "ns=1;s=Robot:Inputs/Outputs:DsiIO:motorProbe4_temp",
+      "ns=1;s=Robot:Inputs/Outputs:DsiIO:operationCounter",
+      "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:IWtemperature",
+      "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:IpowerOn",
+      "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone1",
+      "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone2",
+      "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone3",
+      "ns=1;s=Robot:Inputs/Outputs:Rsi9IO:Izone4",
+      "ns=2;s=EmergencyStop",
+      "ns=2;s=Manufacturer3",
+      "ns=2;s=Model3",
+      "ns=2;s=ProductCode3",
+      "ns=2;s=SerialNumber3",
+      "ns=2;s=TotalPowerOnTime"
+    ]
+  },
+  "7_simultaneous_clients": {
+    "opcua_clients": 1,
+    "opcua_clients_nota": "Apenas 1 cliente OPC UA configurado (client_asyncua.py)",
+    "web_backend": {
+      "framework": "uvicorn + FastAPI + Flask (ASGI/WSGI)",
+      "workers": "1 (default, event-loop assíncrono)",
+      "max_connections": "sem limite explícito (padrão uvicorn)",
+      "nota": "Para limitar, configure --workers e/ou middleware de rate-limiting"
+    },
+    "web_frontend": {
+      "server": "Vite dev server (desenvolvimento) / static build (produção)",
+      "nota": "Em produção, servir com nginx/caddy para controle de conexões"
+    }
+  }
+}

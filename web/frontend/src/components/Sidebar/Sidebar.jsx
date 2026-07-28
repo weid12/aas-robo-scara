@@ -1,0 +1,171 @@
+import { useState, useEffect } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { FaHome, FaClipboardList, FaChartBar, FaProjectDiagram, FaSignOutAlt } from "react-icons/fa";
+
+import styles from "./Sidebar.module.css";
+import { useAuth } from "../../login";
+import aasLogo from "../../assets/aas-logo.png";
+
+const MENU = [
+  { key: "hub", label: "Hub", collapsedLabel: "Hub", icon: <FaHome />, to: "/hub" },
+  { key: "data", label: "Data", icon: <FaChartBar />, to: "/data" },
+  { key: "register", label: "Register", icon: <FaClipboardList />, to: "/register" },
+];
+
+export default function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { userId, logout, profileType } = useAuth();
+
+  const filteredMenu = MENU.filter(item => {
+    if (item.key === "register") {
+      return (profileType || "").toLowerCase() === "admin";
+    }
+    return true;
+  });
+
+  const [open, setOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sidebar-open");
+      if (saved !== null) {
+        return saved === "true";
+      }
+      return window.innerWidth >= 980;
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 980) {
+      setOpen(false);
+    }
+  }, [location.pathname]);
+
+  const trimmedUserId = (userId || "").trim();
+  const userInitial = trimmedUserId ? trimmedUserId.charAt(0).toUpperCase() : "?";
+  const userLabel = trimmedUserId || "User";
+
+  const toggleOpen = () => {
+    setOpen((value) => {
+      const newValue = !value;
+      localStorage.setItem("sidebar-open", String(newValue));
+      return newValue;
+    });
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  return (
+    <div className={`${styles.container} ${open ? "" : styles.containerCollapsed}`}>
+      <aside className={`${styles.root} ${open ? "" : styles.closed}`} role="navigation">
+        <div className={styles.top}>
+          <div className={styles.brand}>
+            <img
+              src={aasLogo}
+              alt="AAS Logo"
+              className={styles.brandMark}
+              style={{
+                width: '48px',
+                height: '48px',
+                objectFit: 'contain',
+                background: 'transparent',
+                border: 'none'
+              }}
+            />
+            <span className={styles.brandText}>SCARA Robot</span>
+          </div>
+        </div>
+
+        <div className={styles.divider} />
+
+        <div className={styles.mainContent}>
+          <nav className={styles.nav}>
+            {filteredMenu.map((item) => {
+              const collapsedLabel = item.collapsedLabel || item.label;
+              const currentLabel = open ? item.label : collapsedLabel;
+              return (
+                <NavLink
+                  key={item.key}
+                  to={item.to}
+                  aria-label={currentLabel}
+                  className={({ isActive }) =>
+                    `${styles.item} ${styles.tip} ${isActive ? styles.active : ""}`
+                  }
+                  title={open ? "" : collapsedLabel}
+                  end
+                >
+                  <span className={styles.icon}>{item.icon}</span>
+                  <span className={styles.label}>{item.label}</span>
+                </NavLink>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className={styles.bottom}>
+          <div className={styles.divider} />
+
+          <div className={styles.userSection}>
+            <div className={styles.userRow}>
+              <div
+                className={`${styles.userIcon} ${styles.tip}`}
+                aria-label={userLabel}
+                title={open ? "" : userLabel}
+              >
+                <span aria-hidden="true">{userInitial}</span>
+              </div>
+
+              <div className={styles.userActions}>
+                <span className={styles.userName}>{userLabel}</span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={`${styles.actText} ${styles.logoutButton}`}
+                  aria-label="Logout"
+                  title={open ? "" : "Logout"}
+                >
+                  <FaSignOutAlt />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className={`${styles.logoutButtonCollapsed} ${styles.tip}`}
+              aria-label="Logout"
+              title={open ? "" : "Logout"}
+            >
+              <FaSignOutAlt />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <button
+        type="button"
+        className={styles.toggleCircleTop}
+        aria-label={open ? "Collapse menu" : "Expand menu"}
+        title={open ? "Collapse" : "Expand"}
+        onClick={toggleOpen}
+        aria-expanded={open}
+      >
+        <span className={`${styles.arrow} ${open ? styles.arrowOpen : ""}`}>
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 320 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" />
+          </svg>
+        </span>
+      </button>
+    </div>
+  );
+}

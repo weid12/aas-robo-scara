@@ -1,4 +1,4 @@
-# AAS Robô Scara - Sistema de Monitoramento
+# AAS Robô Scara — Sistema de Monitoramento
 
 Sistema integrado para monitoramento de robô SCARA utilizando Asset Administration Shell (AAS) e OPC UA.
 
@@ -6,188 +6,186 @@ Sistema integrado para monitoramento de robô SCARA utilizando Asset Administrat
 
 ```
 aas-robo-scara/
-├── opcua_client/           # Cliente OPC UA para coleta de dados
-├── aas_web/                # Aplicação Web (Backend + Frontend)
-│   ├── backend/            # Flask + FastAPI
-│   └── frontend/           # React + Vite + TypeScript
-├── aas-submodels/          # Arquivos JSON no padrão AAS
-├── database/               # Scripts de persistência SQLite
-├── data/                   # Banco de dados SQLite
-└── server_opcua_local/     # Servidor OPC UA local (opcional)
+├── acquisition/                # Camada de aquisição de dados
+│   ├── opcua_client/           # Cliente OPC UA (coleta em tempo real)
+│   └── server_opcua_local/     # Servidor OPC UA local (simulação)
+├── digital_twin/               # Submodelos AAS (arquivos JSON/AASX)
+├── persistence/                # Camada de persistência
+│   └── db/                     # Banco de dados SQLite
+├── web/                        # Aplicação Web
+│   ├── backend/                # Flask + FastAPI (Python)
+│   └── frontend/               # React + Vite + TypeScript
+├── docs/                       # Documentação técnica
+├── requirements.txt            # Dependências Python (aquisição)
+└── start.ps1                   # Script de inicialização rápida
 ```
 
 ## 🛠️ Tecnologias
 
-### Backend
-- Python 3.11+
-- asyncua (Cliente OPC UA)
-- Flask (Autenticação e integração HR)
-- FastAPI (API de dados do robô)
-- SQLAlchemy (ORM)
-- SQLite (Persistência)
+### Backend (`web/backend`)
+- Python 3.11+ com ambiente virtual `.venv`
+- **FastAPI** — API de dados do robô (`/api/robot/*`, `/api/users/*`)
+- **Flask** — Autenticação e rotas de dados (`/api/auth/*`, `/api/data/*`)
+- **Uvicorn** — Servidor ASGI (integra Flask + FastAPI)
+- **SQLAlchemy** + **SQLite** — Persistência de usuários e estados do robô
+- **bcrypt** — Hash seguro de senhas
 
-### Frontend
-- React 18
-- TypeScript
-- Vite (Build tool)
-- Recharts (Gráficos)
-- Material-UI (Componentes)
+### Frontend (`web/frontend`)
+- React 18 + TypeScript
+- Vite (build e dev server)
+- TailwindCSS
+- Proxy configurado para `/api` → `http://localhost:5000`
+
+### Aquisição de Dados (`acquisition/`)
+- **asyncua** — Cliente OPC UA assíncrono
+- **aiofiles**, **aiosqlite** — I/O assíncrono
+- Python-dotenv — Configuração via variáveis de ambiente
 
 ## ⚙️ Requisitos
 
 - Python 3.11+
-- Node.js 16+
-- Servidor OPC UA (opcional - para coleta de dados reais)
+- Node.js 18+
 - Git
 
-## 🚀 Instalação
+## 🚀 Inicialização Rápida
 
-### Cliente OPC UA
+Execute o script na raiz do projeto para abrir backend e frontend em terminais separados:
+
 ```powershell
-cd aas-robo-scara/opcua_client
-python -m venv venv
-.\\venv\\Scripts\\activate
-pip install asyncua python-dotenv
+.\start.ps1
 ```
 
-### Web Interface
+> Se o Windows bloquear a execução por política de segurança:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+
+## 🔧 Instalação Manual
+
+### Backend
 ```powershell
-# Backend (Flask + FastAPI)
-cd aas-robo-scara/aas_web/backend
-python -m venv .venv
-.\\.venv\\Scripts\\activate
+cd web\backend
+# Ambiente virtual já incluso em .venv — ative-o:
+.\.venv\Scripts\Activate.ps1
+# Instalar / atualizar dependências:
 pip install -r requirements.txt
-
-# Frontend (React + Vite + TypeScript)
-cd ../frontend
-npm install
-```
-
-## ⚡ Executando
-
-### 1. Cliente OPC UA (Coleta de dados em tempo real)
-```powershell
-cd aas-robo-scara/opcua_client
-.\\venv\\Scripts\\activate
-python client_asyncua.py
-```
-> **Nota:** O cliente OPC UA requer um servidor OPC UA ativo no robô SCARA. Se estiver testando sem o robô, você pode pular esta etapa e usar dados simulados.
-
-### 2. Web Interface
-
-#### Terminal 1 - Backend API
-```powershell
-cd aas-robo-scara/aas_web/backend
-.\\.venv\\Scripts\\activate
+# Iniciar servidor (http://localhost:5000):
 python app.py
 ```
-O backend estará disponível em: **http://localhost:5000**
 
-#### Terminal 2 - Frontend Web
+### Frontend
 ```powershell
-cd aas-robo-scara/aas_web/frontend
-npm run dev
+cd web\frontend
+npm install          # apenas na primeira vez
+npm run dev          # http://localhost:5173
 ```
-O frontend estará disponível em: **http://localhost:5173**
+
+### Cliente OPC UA (dados reais)
+```powershell
+cd acquisition\opcua_client
+# Configure o endereço do servidor OPC UA:
+$env:OPCUA_SERVER_URL="opc.tcp://<IP-DO-ROBO>:4840"
+python client_asyncua.py
+```
+
+### Servidor OPC UA Local (simulação)
+```powershell
+cd acquisition\server_opcua_local
+python server.py     # opc.tcp://0.0.0.0:4881
+```
 
 ## 📝 Acesso
 
-- **Frontend:** http://localhost:5173
-- **Backend API:** http://localhost:5000
-- **API Docs (FastAPI):** http://localhost:5000/docs
+| Serviço | URL |
+|---|---|
+| **Frontend** | http://localhost:5173 |
+| **Backend API** | http://localhost:5000 |
+| **Docs FastAPI** | http://localhost:5000/docs |
 
 ### Credenciais Padrão
-- Usuário: `admin`
-- Senha: `admin123`
+| Campo | Valor |
+|---|---|
+| Usuário | `admin` |
+| Senha | `admin123` |
 
-> **Nota:** As credenciais são autenticadas via API externa configurada no backend. Certifique-se de que a variável `AUTH_API_BASE` está corretamente configurada no arquivo `.env` do backend.
+> A autenticação é feita localmente via banco de dados SQLite (`web/backend/user_management/users_v2.db`).
+> Para criar ou redefinir o usuário admin, execute:
+> ```powershell
+> cd web\backend
+> .\.venv\Scripts\python.exe create_test_user.py
+> ```
 
 ## 🔧 Configuração
 
-### Backend - Variáveis de Ambiente
-Crie um arquivo `.env` em `aas_web/backend/`:
+### Backend — Variáveis de Ambiente
+Crie um arquivo `.env` em `web/backend/`:
 ```bash
 PORT=5000
-AUTH_API_BASE=http://seu-servidor-autenticacao:8080
 CORS_ORIGINS=http://localhost:5173,http://localhost:3000
-LOG_LEVEL=INFO
+DEBUG=False
 ```
 
-### Cliente OPC UA - Configuração
-Edite `opcua_client/config_opcua.json` para configurar:
+### Cliente OPC UA — Configuração
+Edite `acquisition/opcua_client/config_opcua.json` para ajustar:
 - Endereço do servidor OPC UA
-- Mapeamento de variáveis
+- Mapeamento de variáveis (NodeIDs)
 - Intervalo de coleta
 
 ## 📊 Funcionalidades
 
 ### Dashboard Web
 - Monitoramento em tempo real do robô SCARA
-- Visualização de estado operacional (Running/Idle/Alarm)
-- Métricas OEE (Overall Equipment Effectiveness)
-- Gráficos de performance (Availability, Performance, Quality)
-- Visualização de juntas do robô
-- Histórico de eventos
-
-### Análise de Dados
-- Consulta de dados históricos com filtros de período
-- Exportação de dados em CSV/Excel
-- Visualização de séries temporais
-- Formatação de números no padrão brasileiro
+- Visualização de estado operacional (Running / Idle / Alarm)
+- Métricas OEE (Disponibilidade, Performance, Qualidade)
+- Gráficos de juntas e séries temporais
+- Histórico de eventos e temperatura
 
 ### Integração AAS
 - Exportação de dados no padrão Asset Administration Shell
-- Geração de arquivos AASX compatíveis
-- Estrutura de submodelos conforme especificação AAS
+- Submodelos JSON: Identificação, Dados Técnicos, Dados Operacionais, Performance
 
-## 📁 Estrutura de Dados
+### Gestão de Usuários
+- Cadastro com roles (`director`, `operator`, etc.)
+- Autenticação local com bcrypt
+- Gerenciamento via API REST (`/api/users/*`)
 
-### Banco de Dados SQLite
-- `robot_state`: Estados completos do robô
-- `submodel_snapshots`: Snapshots normalizados por elemento
-- `timeseries`: Séries temporais de valores numéricos
+## 📦 Dependências (`requirements.txt`)
 
-### Arquivos AAS
-- `Submodel_Identification.json`: Identificação do ativo
-- `Submodel_TechnicalData.json`: Dados técnicos
-- `Submodel_OperationalData.json`: Dados operacionais
-- `Submodel_Performance.json`: Métricas de performance
+| Grupo | Versões-chave |
+|---|---|
+| OPC UA | `asyncua==1.0.3`, `aiofiles==23.2.1` |
+| Web | `fastapi==0.135.1`, `uvicorn==0.41.0`, `flask==3.1.3` |
+| Banco | `sqlalchemy==2.0.48` |
+| Segurança | `cryptography>=43.0.0`, `bcrypt==4.0.1` |
+| Dev | `pytest==9.0.2`, `black==25.1.0`, `pylint==4.0.5` |
+
+> **Nota:** `pydantic<2` é mantido intencionalmente no backend (`web/backend/requirements.txt`) por compatibilidade. A migração para pydantic v2 exigirá refatoração dos modelos.
 
 ## 🚨 Troubleshooting
 
-### Erro ao conectar no OPC UA
-- Verifique se o servidor OPC UA está ativo
-- Confirme o endereço em `config_opcua.json`
-- Teste com o servidor local: `python server_opcua_local/server.py`
-
 ### Backend não inicia
+- Confirme que está usando o Python do `.venv`: `web\backend\.venv\Scripts\python.exe app.py`
 - Verifique se a porta 5000 está disponível
-- Confirme que todas as dependências foram instaladas
-- Verifique logs em `logs/` (se configurado)
+
+### Login inválido
+- Certifique-se de que o backend está rodando
+- Para recriar o usuário admin: `python create_test_user.py` (dentro de `web\backend`)
+
+### Erro ao conectar no OPC UA
+- Verifique se o servidor OPC UA está ativo e acessível
+- Use o servidor local para simulação: `python acquisition\server_opcua_local\server.py`
 
 ### Frontend não carrega dados
-- Confirme que o backend está rodando
-- Verifique CORS no backend
-- Inspecione Network tab no DevTools do navegador
-
-## �👥 Contribuição
-
-1. Fork o projeto
-2. Crie sua Feature Branch (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a Branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença do Programa de Pós-graduação em Engenharia Elétrica (PPGEEL).
-
-## ✉️ Contato
-
-Weidson Feitoza - weidsondeoliveira@gmail.com
-
-Projeto: [https://github.com/weid12/aas-robo-scara](https://github.com/weid12/aas-robo-scara)
+- Confirme que o backend está rodando em `localhost:5000`
+- O proxy Vite (`/api → localhost:5000`) requer que o dev server esteja ativo
 
 ## 📚 Documentação Adicional
 
-- [SYSTEM_FLOW.md](./SYSTEM_FLOW.md) - Documentação completa do fluxo do sistema e arquitetura
+- [SYSTEM_FLOW.md](./docs/SYSTEM_FLOW.md) — Fluxo do sistema e diagramas de sequência
+- [SYSTEM_IMPLEMENTATION.md](./docs/SYSTEM_IMPLEMENTATION.md) — Detalhes de implementação IEEE
+
+## ✉️ Contato
+
+Weidson Feitoza — weidsondeoliveira@gmail.com
+
+Projeto: [https://github.com/weid12/aas-robo-scara](https://github.com/weid12/aas-robo-scara)

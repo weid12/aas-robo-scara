@@ -1,0 +1,97 @@
+{
+    "Identification": {
+        "Model": "ts2_80-S1-D25-L200-floor-R4-V7",
+        "Manufacturer": "Staubli",
+        "SN": "F_21_0029073_A_012",
+        "Code": "Robot",
+        "ProductName": "Staubli F-21-0029073-C-012 robot OpcUa server",
+        "ProductUri": "urn:Staubli/Products/OpcUa/Server",
+        "SoftwareRevision": "2.0.0",
+        "BuildNumber": "0",
+        "BuildDate": "2022-10-27T01:05:17"
+    },
+    "TechnicalData": {
+        "Range": {
+            "manual": "800 mm",
+            "policy": "manual-only"
+        },
+        "Payload": {
+            "manual": "8 kg",
+            "policy": "manual-only"
+        },
+        "Repeatability": {
+            "manual": "±0.02 mm",
+            "policy": "manual-only"
+        },
+        "Weight": {
+            "manual": "42 kg",
+            "policy": "manual-only"
+        },
+        "PayloadUser": 2.19
+    },
+    "OperationalData": {
+        "JointPosition1": [
+            5.22,
+            -41.38,
+            92.46,
+            53.89
+        ],
+        "JointPosition2": [
+            5.22,
+            -41.38,
+            92.46,
+            53.89
+        ],
+        "JointPosition3": [
+            5.22,
+            -41.38,
+            92.46,
+            53.89
+        ],
+        "JointPosition4": [
+            5.22,
+            -41.38,
+            92.46,
+            53.89
+        ],
+        "WorkingMode": "manual slow",
+        "RobotStatus": "none",
+        "CycleTime": "0.004s"
+    },
+    "TemperatureData": {
+        "motorProbe1_temp": 17.6,
+        "motorProbe2_temp": 21.6,
+        "motorProbe3_temp": 21.0,
+        "motorProbe4_temp": 20.8,
+        "IWtemperature": 39
+    },
+    "Safety": {
+        "EmergencyStop": false,
+        "SafetyStatus": "none",
+        "SafetyFault": "no stop",
+        "SafetyFaultCode": 0.0,
+        "Izone1": true,
+        "Izone2": true,
+        "Izone3": false,
+        "Izone4": false
+    },
+    "CounterData": {
+        "operationCounter": 1890202
+    },
+    "PowerData": {
+        "PowerSupplyIO": "P00Y00M00DT00H22M20S",
+        "PowerOn": false,
+        "PowerOnController": 0
+    },
+    "RuntimeDiagnostics": {
+        "StartTime": "2026-03-18T16:02:10.563704",
+        "CurrentTime": "2026-03-18T20:24:15.250761+00:00"
+    },
+    "_client": {
+        "enabled": true,
+        "mode": "polling",
+        "publishing_interval_ms": 200,
+        "write_interval_s": 0.5,
+        "interval_seconds": 0.5
+    }
+}

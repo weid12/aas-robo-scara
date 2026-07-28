@@ -1,0 +1,37 @@
+{
+  "category": "VARIABLE",
+  "idShort": "RuntimeDiagnostics",
+  "id": "https://example.com/ids/sm/0362_2092_9052_1535",
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "category": "VARIABLE",
+      "idShort": "StartTime",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2257"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "2026-03-18T16:02:10.563704"
+    },
+    {
+      "category": "VARIABLE",
+      "idShort": "CurrentTime",
+      "qualifiers": [
+        {
+          "type": "OPCUA.NodeId",
+          "valueType": "xs:string",
+          "value": "ns=0;i=2258"
+        }
+      ],
+      "valueType": "xs:string",
+      "modelType": "Property",
+      "value": "2026-03-18T16:23:50.157938"
+    }
+  ],
+  "modelType": "Submodel"
+}
