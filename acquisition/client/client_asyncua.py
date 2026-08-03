@@ -73,7 +73,7 @@ _OPCUA_CLIENT_DIR = Path(__file__).resolve().parent
 CONFIG_FILE = str(_OPCUA_CLIENT_DIR / "config_opcua.json")
 OUTPUT_FILE = str(_OPCUA_CLIENT_DIR / "latest_data.json")
 AAS_SUBMODELS_DIR = str(_ROOT_DIR / "digital_twin/submodels")
-SERVER_URL = os.getenv("OPCUA_SERVER_URL", "opc.tcp://192.168.0.102:4880/Staubli")
+SERVER_URL = os.getenv("OPCUA_SERVER_URL", "opc.tcp://192.168.0.31:4880/Staubli")
 DB_PATH = str(_ROOT_DIR / "persistence/storage/aas_history.sqlite3")
 
 # Caminho para o banco de dados do Backend AAS Web

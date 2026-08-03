@@ -119,7 +119,7 @@ def collect_network_info() -> Dict[str, Any]:
             config = json.load(f)
         # Extrai endpoint do servidor OPC UA real (do código-fonte)
         info["topology"]["opcua_server_real"] = os.getenv(
-            "OPCUA_SERVER_URL", "opc.tcp://192.168.0.102:4880/Staubli"
+            "OPCUA_SERVER_URL", "opc.tcp://192.168.0.31:4880/Staubli"
         )
     
     server_config_path = ROOT_DIR / "acquisition" / "server_local" / "config_server.json"

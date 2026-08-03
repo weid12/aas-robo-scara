@@ -35,7 +35,7 @@ graph TD
     end
 
     subgraph L2["Camada 2 — Integration"]
-        PLC["OPC UA Server<br/>Controlador Stäubli<br/>opc.tcp://192.168.0.102:4880"]
+        PLC["OPC UA Server<br/>Controlador Stäubli<br/>opc.tcp://192.168.0.31:4880"]
         MAPPER["Mapeador OPC UA → AAS<br/>config_opcua.json"]
     end
 
@@ -85,7 +85,7 @@ graph TD
 ```mermaid
 graph TB
     subgraph "Fonte de Dados"
-        Robot[Robô SCARA<br/>OPC UA Server<br/>opc.tcp://192.168.0.102:4880/Staubli]
+        Robot[Robô SCARA<br/>OPC UA Server<br/>opc.tcp://192.168.0.31:4880/Staubli]
     end
 
     subgraph "Aquisição de Dados"
@@ -274,7 +274,7 @@ sequenceDiagram
     Config-->>Client: Mapeamento de NodeIds
 
     loop Ciclo de Polling (interval_seconds, padrão: 0.1s)
-        Client->>Robot: Conecta (opc.tcp://192.168.0.102:4880/Staubli)
+        Client->>Robot: Conecta (opc.tcp://192.168.0.31:4880/Staubli)
         Robot-->>Client: Conexão estabelecida
 
         Client->>Robot: Lê nós OPC UA configurados
@@ -744,7 +744,7 @@ updateUser(id, data): Promise<UserRead>
 
 ```bash
 # OPC UA Client
-OPCUA_SERVER_URL=opc.tcp://192.168.0.102:4880/Staubli
+OPCUA_SERVER_URL=opc.tcp://192.168.0.31:4880/Staubli
 OPCUA_CLIENT_ENABLED=true         # true|false
 OPCUA_CLIENT_INTERVAL=0.1         # segundos (modo polling)
 LOG_LEVEL=INFO

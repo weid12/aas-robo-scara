@@ -95,56 +95,32 @@ def read_latest_state(db: Session = Depends(get_db)):
                     except:
                         pass
 
-                # Calcula o Uptime
-                start_time_str = diag.get("StartTime")
-                if current_time_str and start_time_str:
-                    from datetime import datetime
-                    import datetime as dt
-                    try:
-                        ct = datetime.fromisoformat(current_time_str)
-                        st = datetime.fromisoformat(start_time_str)
-                        # Naive to local timestamp converting
-                        if st.tzinfo is None and ct.tzinfo is not None:
-                            # StartTime is usually local. Convert ct to local's naive time for a direct diff.
-                            import time
-                            # Get local timezone offset to correctly subtract 
-                            ct_naive = ct.replace(tzinfo=None)
-                            # If CurrentTime has +00:00, it's UTC. Local is UTC + timezone_offset.
-                            # Best approach: Since CurrentTime is UTC and StartTime is local, convert StartTime to UTC or vice versa.
-                            # Just astimezone() local for both:
-                            if ct.utcoffset() is not None:
-                                ct_timestamp = ct.timestamp() # gives seconds since epoch
-                            else:
-                                ct_timestamp = ct.replace(tzinfo=dt.timezone.utc).timestamp()
-                            
-                            # For local naive we treat it as local:
-                            import calendar
-                            # Python datetime naive fromisoformat doesn't offer straightforward local timestamp.
-                            # Since from datetime import datetime was used.
-                            # We can just rely on astimezone:
-                        
-                        # Let's forcefully standardize them by converting both to UTC timestamps if possible
-                        try:
-                            # st represents local time (e.g. 16:02 vs 20:02 UTC). If we make it aware of local timezone:
-                            st_aware = st.astimezone() if st.tzinfo is None else st
-                            ct_aware = ct.astimezone() if ct.tzinfo is None else ct
-                            
-                            uptime_seconds = (ct_aware - st_aware).total_seconds()
-                        except:
-                            # Fallback
-                            if st.tzinfo is None and ct.tzinfo is not None:
-                                st = st.replace(tzinfo=dt.timezone.utc)
-                            elif ct.tzinfo is None and st.tzinfo is not None:
-                                ct = ct.replace(tzinfo=dt.timezone.utc)
-                            uptime_seconds = (ct - st).total_seconds()
-                            
-                        # If uptime is wildly negative, handle it
-                        if uptime_seconds < 0:
-                            uptime_seconds = 0
-                            
-                        setattr(latest, "uptime_s", uptime_seconds)
-                    except Exception as e:
-                        print("Error computing uptime:", e)
+                # Calcula o Uptime (tempo desde última conexão OPC UA do cliente)
+                from datetime import datetime
+                import datetime as dt
+                try:
+                    # Busca timestamp da última conexão OPC UA no banco
+                    import sqlite3 as _sq
+                    _conn_db = Path(__file__).resolve().parents[0] / "aas_robot_scara.db"
+                    uptime_seconds = 0
+                    if _conn_db.exists():
+                        with _sq.connect(str(_conn_db)) as _conn:
+                            row = _conn.execute(
+                                "SELECT connected_at FROM opcua_connections ORDER BY id DESC LIMIT 1"
+                            ).fetchone()
+                            if row and row[0]:
+                                last_conn = datetime.fromisoformat(row[0])
+                                now_utc = datetime.now(dt.timezone.utc)
+                                # Garante que ambos são aware
+                                if last_conn.tzinfo is None:
+                                    last_conn = last_conn.replace(tzinfo=dt.timezone.utc)
+                                uptime_seconds = (now_utc - last_conn).total_seconds()
+                                if uptime_seconds < 0:
+                                    uptime_seconds = 0
+
+                    setattr(latest, "uptime_s", uptime_seconds)
+                except Exception as e:
+                    print("Error computing uptime:", e)
 
                 # Temperatura real por eixo (motorProbe1_temp .. motorProbe4_temp)
                 temp_data = data.get("TemperatureData", {})
