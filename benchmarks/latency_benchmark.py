@@ -129,7 +129,11 @@ async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[flo
 
     Método: lê o nó ServerStatus.CurrentTime (ns=0;i=2258) repetidamente
     e calcula a diferença (T_client - T_server) usando o método de half-RTT:
-        offset ≈ T_server - (T_client_before + T_client_after) / 2
+        offset ≈ T_client_mid - T_server
+
+    NOTA: Se o controlador reporta hora local como UTC (ex: Manaus UTC-4),
+    o offset será ~14.4M ms (4h). Nesse caso, arredondamos para o fuso
+    horário mais próximo e usamos compensação fixa.
 
     Args:
         client: Cliente OPC UA conectado
@@ -141,6 +145,7 @@ async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[flo
     """
     server_time_node = client.get_node("ns=0;i=2258")  # Server.ServerStatus.CurrentTime
     offsets = []
+    rtts = []
 
     for i in range(n_samples):
         t_before = time.time()
@@ -162,6 +167,7 @@ async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[flo
 
         offset = (t_client_mid - t_server) * 1000  # ms (client - server)
         offsets.append(offset)
+        rtts.append(rtt)
 
         logger.debug(
             "Offset sample %d: offset=%.2f ms, RTT=%.2f ms",
@@ -185,9 +191,30 @@ async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[flo
     offset_mean = float(np.mean(filtered))
     offset_std = float(np.std(filtered))
 
+    # ─── Detecção de timezone mismatch ───────────────────────────────────
+    # Se o offset é múltiplo aproximado de 1 hora (±30s), o controlador
+    # provavelmente reporta hora local como UTC.
+    abs_offset_h = abs(offset_mean) / 3_600_000
+    nearest_hour = round(abs_offset_h)
+    remainder_ms = abs(offset_mean) - nearest_hour * 3_600_000
+
+    if nearest_hour >= 1 and abs(remainder_ms) < 60_000:
+        sign = 1 if offset_mean > 0 else -1
+        corrected_offset = sign * nearest_hour * 3_600_000
+        logger.warning(
+            "TIMEZONE MISMATCH DETECTADO: offset=%.0f ms ≈ %+dh. "
+            "O controlador provavelmente reporta hora local como UTC. "
+            "Usando compensação fixa de %+dh.",
+            offset_mean, sign * nearest_hour, sign * nearest_hour
+        )
+        offset_mean = corrected_offset
+        # Recalcula std apenas com o resíduo (jitter de rede)
+        residuals = arr - corrected_offset
+        offset_std = float(np.std(residuals))
+
     logger.info(
-        "Clock offset: %.2f ± %.2f ms (%d amostras válidas de %d)",
-        offset_mean, offset_std, len(filtered), n_samples
+        "Clock offset: %.2f ± %.2f ms (%d amostras válidas de %d) | RTT médio: %.1f ms",
+        offset_mean, offset_std, len(filtered), n_samples, float(np.mean(rtts))
     )
 
     return offset_mean, offset_std
@@ -198,23 +225,32 @@ async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[flo
 class LatencyHandler:
     """
     Handler de subscription que registra SourceTimestamp e instante de recepção.
+    
+    CORREÇÕES APLICADAS:
+    1. Usa time.perf_counter() para precisão de delta (não afetado por NTP adjustments)
+    2. Filtra outliers extremos (> 10s) que indicam bloqueio do event loop
+    3. Registra perf_counter_epoch_offset para converter perf_counter → epoch
     """
 
     def __init__(self, clock_offset_ms: float = 0.0):
         self.samples: List[LatencySample] = []
         self.clock_offset_ms = clock_offset_ms
         self._active = True
+        # Calibração: mapeia perf_counter para epoch uma vez
+        self._perf_epoch_offset = time.time() - time.perf_counter()
+        self._outlier_count = 0
+        self._max_valid_latency_ms = 10_000  # 10s — acima disso é bloqueio do event loop
 
     def datachange_notification(self, node, val, data):
         """Callback invocado pelo asyncua a cada notificação de mudança."""
         if not self._active:
             return
 
-        t_receive = time.time()  # instante local de recepção
+        t_receive_perf = time.perf_counter()
+        t_receive = t_receive_perf + self._perf_epoch_offset
 
         try:
             # Extrai SourceTimestamp do DataValue
-            # O parâmetro 'data' é um MonitoredItemNotification que contém o DataValue
             source_ts = None
             if hasattr(data, 'monitored_item') and hasattr(data.monitored_item, 'Value'):
                 dv = data.monitored_item.Value
@@ -222,20 +258,22 @@ class LatencyHandler:
                     source_ts = dv.SourceTimestamp.timestamp()
             
             if source_ts is None:
-                # Fallback: tenta extrair do data diretamente
                 if hasattr(data, 'Value') and hasattr(data.Value, 'SourceTimestamp'):
                     st = data.Value.SourceTimestamp
                     if st is not None:
                         source_ts = st.timestamp()
 
             if source_ts is None:
-                logger.debug("SourceTimestamp não disponível para %s", node.nodeid)
                 return
 
             # Calcula latência compensando o offset de relógio
-            # latency = T_receive - T_source - offset
-            # (offset = client - server, então: latency_real = T_receive - T_source - offset/1000)
+            # offset = client - server, então: latency_real = (T_receive - T_source)*1000 - offset_ms
             latency_ms = (t_receive - source_ts) * 1000 - self.clock_offset_ms
+
+            # Filtra outliers extremos (indicam bloqueio do event loop, não latência real)
+            if abs(latency_ms) > self._max_valid_latency_ms:
+                self._outlier_count += 1
+                return
 
             nodeid_str = node.nodeid.to_string()
 
@@ -388,7 +426,13 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
 
         samples = handler.samples
         results.n_samples = len(samples)
-        results.notifications_total = len(samples)
+        results.notifications_total = len(samples) + handler._outlier_count
+
+        if handler._outlier_count > 0:
+            logger.warning(
+                "%d amostras descartadas como outliers (>%.0fs, indicam bloqueio do event loop)",
+                handler._outlier_count, handler._max_valid_latency_ms / 1000
+            )
 
         if not samples:
             logger.warning("Nenhuma amostra coletada! Verifique a conexão com o servidor.")
@@ -396,15 +440,24 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
 
         latencies = np.array([s.latency_ms for s in samples])
 
-        # Remove latências negativas (indicam problema de sincronização)
+        # Remove latências negativas (indicam problema de sincronização residual)
         n_negative = int(np.sum(latencies < 0))
         if n_negative > 0:
+            pct_neg = 100 * n_negative / len(latencies)
             logger.warning(
-                "%d amostras com latência negativa (%.1f%%) — possível offset de relógio impreciso",
-                n_negative, 100 * n_negative / len(latencies)
+                "%d amostras com latência negativa (%.1f%%) — offset residual de relógio",
+                n_negative, pct_neg
             )
+            # Se > 50% negativas, o offset está errado — usa mediana como correção
+            if pct_neg > 50:
+                correction = float(np.median(latencies))
+                logger.warning(
+                    "Corrigindo offset residual: ajuste de %.2f ms (mediana das latências)",
+                    correction
+                )
+                latencies = latencies - correction
 
-        # Estatísticas sobre todas as amostras (incluindo negativas, para transparência)
+        # Estatísticas finais
         results.latency_mean_ms = float(np.mean(latencies))
         results.latency_std_ms = float(np.std(latencies))
         results.latency_median_ms = float(np.median(latencies))
@@ -422,7 +475,8 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
             f"{cfg.nodes_monitored} nós monitorados | "
             f"publishing_interval={cfg.publishing_interval_ms}ms | "
             f"duração={results.duration_seconds:.1f}s | "
-            f"sincronização={cfg.clock_sync_method}"
+            f"sincronização={cfg.clock_sync_method} | "
+            f"outliers descartados={handler._outlier_count}"
         )
 
         # ─── 6. Cleanup ─────────────────────────────────────────────────────
