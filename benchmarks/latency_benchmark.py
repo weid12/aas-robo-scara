@@ -241,6 +241,17 @@ class LatencyHandler:
         self._outlier_count = 0
         self._max_valid_latency_ms = 10_000  # 10s — acima disso é bloqueio do event loop
 
+        # ─── Contagem de ciclos do robô (baseado em J3) ──────────────────────
+        # Um ciclo é detectado quando J3 cruza o ponto de referência (posição
+        # máxima ou mínima) e retorna — ou seja, muda de direção.
+        # Usamos detecção de inversão de direção (pico/vale).
+        self.robot_cycles = 0
+        self._j3_node_id = "ns=1;s=Robot:Controller:System:RobotPosition:Joint Position"
+        self._j3_values: List[float] = []  # histórico recente de J3
+        self._j3_direction: Optional[int] = None  # 1=subindo, -1=descendo
+        self._j3_last_peak: Optional[float] = None
+        self._j3_hysteresis = 2.0  # graus de histerese para evitar falsos ciclos
+
     def datachange_notification(self, node, val, data):
         """Callback invocado pelo asyncua a cada notificação de mudança."""
         if not self._active:
@@ -277,6 +288,10 @@ class LatencyHandler:
 
             nodeid_str = node.nodeid.to_string()
 
+            # ─── Detecção de ciclo do robô via J3 ────────────────────────────
+            if nodeid_str == self._j3_node_id:
+                self._detect_robot_cycle(val)
+
             self.samples.append(LatencySample(
                 node_id=nodeid_str,
                 source_timestamp=source_ts,
@@ -286,6 +301,56 @@ class LatencyHandler:
 
         except Exception as e:
             logger.debug("Erro ao processar notificação: %s", e)
+
+    def _detect_robot_cycle(self, val: Any) -> None:
+        """
+        Detecta ciclos do robô baseado na inversão de direção da junta 3.
+        
+        Um ciclo completo = J3 sobe até um pico E desce até um vale (ou vice-versa).
+        Cada par pico+vale conta como 1 ciclo.
+        """
+        try:
+            # val é array [J1, J2, J3, J4] — extrair J3 (índice 2)
+            if isinstance(val, (list, tuple)) and len(val) > 2:
+                j3 = float(val[2])
+            elif isinstance(val, (int, float)):
+                j3 = float(val)
+            else:
+                return
+
+            self._j3_values.append(j3)
+
+            # Precisa de pelo menos 3 pontos para detectar inversão
+            if len(self._j3_values) < 3:
+                return
+
+            # Mantém janela limitada (últimos 10 valores)
+            if len(self._j3_values) > 10:
+                self._j3_values = self._j3_values[-10:]
+
+            # Direção atual
+            prev = self._j3_values[-2]
+            curr = self._j3_values[-1]
+            delta = curr - prev
+
+            # Ignora variações menores que histerese (ruído)
+            if abs(delta) < self._j3_hysteresis:
+                return
+
+            new_direction = 1 if delta > 0 else -1
+
+            # Detecta inversão de direção
+            if self._j3_direction is not None and new_direction != self._j3_direction:
+                # Inversão detectada — meio ciclo
+                if self._j3_last_peak is not None:
+                    # Já tínhamos um pico anterior → ciclo completo
+                    self.robot_cycles += 1
+                self._j3_last_peak = curr
+
+            self._j3_direction = new_direction
+
+        except (TypeError, ValueError, IndexError):
+            pass
 
     def status_change_notification(self, status):
         logger.warning("Subscription status changed: %s", status)
@@ -440,24 +505,51 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
 
         latencies = np.array([s.latency_ms for s in samples])
 
-        # Remove latências negativas (indicam problema de sincronização residual)
+        # ─── Detecção e compensação de offset residual ───────────────────────
+        # Após compensar o timezone (4h), pode restar um offset fixo do relógio
+        # do controlador (não sincronizado via NTP). Se a mediana > 1000ms ou
+        # < -1000ms, é offset de relógio, não latência de rede real.
+        # A latência de rede OPC UA típica em LAN é 1-200ms.
+        median_raw = float(np.median(latencies))
+        residual_offset_ms = 0.0
+
+        if abs(median_raw) > 1000:
+            # Offset residual detectado — o mínimo das latências é a melhor
+            # estimativa da latência real mínima (1-way delay de rede).
+            # O resto é offset de relógio.
+            min_latency = float(np.min(latencies))
+            # Correção: subtrai o offset de modo que min ≈ 0 (one-way delay mínimo)
+            # Usamos percentil 5 para ser mais robusto que o mínimo absoluto.
+            p5 = float(np.percentile(latencies, 5))
+            residual_offset_ms = p5
+            logger.warning(
+                "OFFSET RESIDUAL DETECTADO: mediana=%.0f ms. "
+                "O relógio do controlador tem ~%.1f s de erro em relação ao UTC. "
+                "Aplicando correção de %.0f ms (P5 das latências brutas).",
+                median_raw, median_raw / 1000, residual_offset_ms
+            )
+            latencies = latencies - residual_offset_ms
+        elif median_raw < -1000:
+            residual_offset_ms = median_raw
+            logger.warning(
+                "OFFSET RESIDUAL NEGATIVO: mediana=%.0f ms. Corrigindo.",
+                median_raw
+            )
+            latencies = latencies - residual_offset_ms
+
+        # Reporta latências negativas remanescentes (devem ser poucas após correção)
         n_negative = int(np.sum(latencies < 0))
         if n_negative > 0:
             pct_neg = 100 * n_negative / len(latencies)
-            logger.warning(
-                "%d amostras com latência negativa (%.1f%%) — offset residual de relógio",
+            logger.info(
+                "%d amostras com latência negativa (%.1f%%) após correção — jitter normal",
                 n_negative, pct_neg
             )
-            # Se > 50% negativas, o offset está errado — usa mediana como correção
-            if pct_neg > 50:
-                correction = float(np.median(latencies))
-                logger.warning(
-                    "Corrigindo offset residual: ajuste de %.2f ms (mediana das latências)",
-                    correction
-                )
-                latencies = latencies - correction
 
-        # Estatísticas finais
+        # Guarda offset residual no resultado para transparência
+        results.clock_offset_ms = results.clock_offset_ms + residual_offset_ms
+
+        # Estatísticas finais (sobre latências corrigidas)
         results.latency_mean_ms = float(np.mean(latencies))
         results.latency_std_ms = float(np.std(latencies))
         results.latency_median_ms = float(np.median(latencies))
@@ -476,7 +568,8 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
             f"publishing_interval={cfg.publishing_interval_ms}ms | "
             f"duração={results.duration_seconds:.1f}s | "
             f"sincronização={cfg.clock_sync_method} | "
-            f"outliers descartados={handler._outlier_count}"
+            f"outliers descartados={handler._outlier_count} | "
+            f"ciclos do robô (J3)={handler.robot_cycles}"
         )
 
         # ─── 6. Cleanup ─────────────────────────────────────────────────────
