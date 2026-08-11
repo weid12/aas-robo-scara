@@ -44,10 +44,10 @@ logger = logging.getLogger("portability_benchmark")
 ROOT_DIR = Path(__file__).resolve().parents[1]
 PORTABILITY_DIR = Path(__file__).resolve().parent / "portability_test"
 
-CNC_SERVER_SCRIPT = str(PORTABILITY_DIR / "simulated_cnc_server.py")
-CNC_CONFIG = str(PORTABILITY_DIR / "config_opcua_cnc.json")
+CNC_SERVER_SCRIPT = str(PORTABILITY_DIR / "simulated_6axis_server.py")
+CNC_CONFIG = str(PORTABILITY_DIR / "config_opcua_6axis.json")
 SCARA_CONFIG = str(ROOT_DIR / "acquisition" / "client" / "config_opcua.json")
-CNC_SERVER_URL = "opc.tcp://localhost:4882/CNC"
+CNC_SERVER_URL = "opc.tcp://localhost:4882/Robot6Axis"
 
 
 @dataclass
@@ -231,7 +231,7 @@ def compute_config_diff(scara_config_path: str, cnc_config_path: str) -> Dict[st
 
     # Detalha o que mudou
     changes = []
-    changes.append(f"Endpoint: SCARA=opc.tcp://192.168.0.31:4880/Staubli → CNC=opc.tcp://localhost:4882/CNC")
+    changes.append(f"Endpoint: SCARA=opc.tcp://192.168.0.31:4880/Staubli → 6Axis=opc.tcp://localhost:4882/Robot6Axis")
     changes.append(f"Nós monitorados: {len(scara_nodes)} → {len(cnc_nodes)}")
     changes.append(f"Submodelos: {len(scara_subs)} → {len(cnc_subs)}")
 
@@ -262,7 +262,7 @@ def print_report(report: PortabilityReport) -> str:
     # Tabela comparativa
     lines.append("")
     lines.append("┌────────────────────────────┬──────────────────────┬──────────────────────┐")
-    lines.append("│ Métrica                    │ SCARA (original)     │ CNC (segundo ativo)  │")
+    lines.append("│ Métrica                    │ SCARA (original)     │ 6-Axis (segundo ativo)│")
     lines.append("├────────────────────────────┼──────────────────────┼──────────────────────┤")
 
     s = report.scara_result
@@ -339,13 +339,13 @@ async def async_main(args):
         # 2. Executa aquisição na CNC simulada
         logger.info("")
         logger.info("═" * 75)
-        logger.info("  Teste com CNC simulada (segundo ativo)")
+        logger.info("  Teste com Robô 6 Eixos simulado (segundo ativo)")
         logger.info("═" * 75)
 
         cnc_result = await run_acquisition(
             server_url=CNC_SERVER_URL,
             config_path=CNC_CONFIG,
-            asset_name="CNC_VMC850",
+            asset_name="Robot_6Axis_KR210",
             duration_s=args.duration,
         )
         report.cnc_result = cnc_result
@@ -383,7 +383,7 @@ async def async_main(args):
         # 5. Gera conclusão
         report.conclusion = (
             "A arquitetura é portável: o mesmo cliente OPC UA e pipeline AAS\n"
-            "funcionam com um segundo ativo (CNC simulada) alterando apenas:\n"
+            "funcionam com um segundo ativo (Robô 6 Eixos simulado) alterando apenas:\n"
             "  1. O arquivo config_opcua.json (mapeamento de NodeIds)\n"
             "  2. A variável OPCUA_SERVER_URL (endpoint do servidor)\n"
             "Nenhuma alteração de código foi necessária.\n"

@@ -1,0 +1,65 @@
+{
+  "Identification": {
+    "Model": "ns=2;s=Model",
+    "Manufacturer": "ns=2;s=Manufacturer",
+    "SN": "ns=2;s=SerialNumber",
+    "FirmwareVersion": "ns=2;s=FirmwareVersion",
+    "DOF": "ns=2;s=DOF",
+    "ProductName": "ns=0;i=2261",
+    "ProductUri": "ns=0;i=2262",
+    "SoftwareRevision": "ns=0;i=2264"
+  },
+  "TechnicalData": {
+    "DOF": { "manual": "6", "policy": "manual-only" },
+    "Reach": { "manual": "2700 mm", "policy": "manual-only" },
+    "Payload": { "manual": "210 kg", "policy": "manual-only" },
+    "Repeatability": { "manual": "±0.06 mm", "policy": "manual-only" },
+    "Weight": { "manual": "1068 kg", "policy": "manual-only" }
+  },
+  "OperationalData": {
+    "JointPositions": "ns=2;s=JointPositions",
+    "TCP_X_mm": "ns=2;s=TCP_X_mm",
+    "TCP_Y_mm": "ns=2;s=TCP_Y_mm",
+    "TCP_Z_mm": "ns=2;s=TCP_Z_mm",
+    "JointTorques_Nm": "ns=2;s=JointTorques_Nm",
+    "VelocityOverride_pct": "ns=2;s=VelocityOverride_pct",
+    "RobotStatus": "ns=2;s=RobotStatus",
+    "WorkingMode": "ns=2;s=WorkingMode",
+    "ActiveProgram": "ns=2;s=ActiveProgram",
+    "CycleTime_s": "ns=2;s=CycleTime_s"
+  },
+  "TemperatureData": {
+    "Motor1_temp_C": "ns=2;s=Motor1_temp_C",
+    "Motor2_temp_C": "ns=2;s=Motor2_temp_C",
+    "Motor3_temp_C": "ns=2;s=Motor3_temp_C",
+    "Motor4_temp_C": "ns=2;s=Motor4_temp_C",
+    "Motor5_temp_C": "ns=2;s=Motor5_temp_C",
+    "Motor6_temp_C": "ns=2;s=Motor6_temp_C",
+    "Controller_temp_C": "ns=2;s=Controller_temp_C"
+  },
+  "Safety": {
+    "EmergencyStop": "ns=2;s=EmergencyStop",
+    "SafetyStatus": "ns=2;s=SafetyStatus",
+    "Zone1_active": "ns=2;s=Zone1_active",
+    "Zone2_active": "ns=2;s=Zone2_active"
+  },
+  "CounterData": {
+    "OperationCounter": "ns=2;s=OperationCounter",
+    "TotalDistance_m": "ns=2;s=TotalDistance_m"
+  },
+  "PowerData": {
+    "PowerConsumption_W": "ns=2;s=PowerConsumption_W",
+    "TotalPowerOnTime_h": "ns=2;s=TotalPowerOnTime_h"
+  },
+  "RuntimeDiagnostics": {
+    "StartTime": "ns=0;i=2257",
+    "CurrentTime": "ns=0;i=2258"
+  },
+  "_client": {
+    "enabled": true,
+    "mode": "subscription",
+    "publishing_interval_ms": 200,
+    "write_interval_s": 0.5,
+    "interval_seconds": 0.01
+  }
+}
