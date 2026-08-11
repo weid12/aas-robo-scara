@@ -519,9 +519,9 @@ def _find_client_process() -> Optional[int]:
     try:
         result = subprocess.run(
             ['powershell', '-Command',
-             'Get-Process python -ErrorAction SilentlyContinue | '
+             'Get-CimInstance Win32_Process -Filter "Name=\'python.exe\'" | '
              'Where-Object {$_.CommandLine -like "*client_asyncua*"} | '
-             'Select-Object -ExpandProperty Id'],
+             'Select-Object -ExpandProperty ProcessId'],
             capture_output=True, text=True, timeout=10
         )
         if result.returncode == 0 and result.stdout.strip():
