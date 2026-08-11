@@ -1,0 +1,55 @@
+{
+  "Identification": {
+    "Model": "ns=2;s=Model",
+    "Manufacturer": "ns=2;s=Manufacturer",
+    "SN": "ns=2;s=SerialNumber",
+    "FirmwareVersion": "ns=2;s=FirmwareVersion",
+    "ProductName": "ns=0;i=2261",
+    "ProductUri": "ns=0;i=2262",
+    "SoftwareRevision": "ns=0;i=2264"
+  },
+  "TechnicalData": {
+    "TravelX": { "manual": "850 mm", "policy": "manual-only" },
+    "TravelY": { "manual": "500 mm", "policy": "manual-only" },
+    "TravelZ": { "manual": "500 mm", "policy": "manual-only" },
+    "MaxSpindleSpeed": { "manual": "12000 rpm", "policy": "manual-only" },
+    "Weight": { "manual": "3500 kg", "policy": "manual-only" }
+  },
+  "OperationalData": {
+    "AxisX_mm": "ns=2;s=AxisX_mm",
+    "AxisY_mm": "ns=2;s=AxisY_mm",
+    "AxisZ_mm": "ns=2;s=AxisZ_mm",
+    "SpindleRPM": "ns=2;s=SpindleRPM",
+    "FeedRate_mmmin": "ns=2;s=FeedRate_mmmin",
+    "MachineStatus": "ns=2;s=MachineStatus",
+    "OperationMode": "ns=2;s=OperationMode"
+  },
+  "TemperatureData": {
+    "SpindleTemp_C": "ns=2;s=SpindleTemp_C",
+    "CoolantTemp_C": "ns=2;s=CoolantTemp_C",
+    "AmbientTemp_C": "ns=2;s=AmbientTemp_C"
+  },
+  "Safety": {
+    "EmergencyStop": "ns=2;s=EmergencyStop",
+    "DoorClosed": "ns=2;s=DoorClosed"
+  },
+  "CounterData": {
+    "PartsProduced": "ns=2;s=PartsProduced",
+    "ToolChanges": "ns=2;s=ToolChanges"
+  },
+  "PowerData": {
+    "PowerConsumption_kW": "ns=2;s=PowerConsumption_kW",
+    "TotalRuntime_h": "ns=2;s=TotalRuntime_h"
+  },
+  "RuntimeDiagnostics": {
+    "StartTime": "ns=0;i=2257",
+    "CurrentTime": "ns=0;i=2258"
+  },
+  "_client": {
+    "enabled": true,
+    "mode": "subscription",
+    "publishing_interval_ms": 200,
+    "write_interval_s": 0.5,
+    "interval_seconds": 0.01
+  }
+}
