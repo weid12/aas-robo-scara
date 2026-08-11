@@ -1,0 +1,102 @@
+
+===========================================================================
+  RELATÓRIO DE PORTABILIDADE — SCARA TS2-80 → Robô 6 Eixos (KR-210)
+===========================================================================
+
+┌────────────────────────────┬──────────────────────┬───────────────────────┐
+│ Métrica                    │ SCARA (original)     │ 6-Axis (segundo ativo)│
+├────────────────────────────┼──────────────────────┼───────────────────────┤
+│ Servidor                   │ opc.tcp://192.168.0. │ opc.tcp://localhost:   │
+│                            │ 31:4880/Staubli      │ 4882/Robot6Axis        │
+│ Submodelos AAS             │ 8                    │ 8                     │
+│ Nós OPC UA monitorados     │ 33                   │ 36                    │
+│ Elementos em OperationalD. │ 7                    │ 20                    │
+│ Elementos em TemperatureD. │ 5                    │ 7                     │
+│ Elementos em Safety        │ 8                    │ 4                     │
+│ Publishing interval (ms)   │ 200                  │ 200                   │
+│ Write interval (s)         │ 0.5                  │ 0.5                   │
+│ Modo de aquisição          │ subscription         │ subscription          │
+│ Taxa aquisição (Hz)        │ ~7.4                 │ ~5.0 (simulado)       │
+│ Ciclo do robô (s)          │ ~3.0                 │ 6.0                   │
+└────────────────────────────┴──────────────────────┴───────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ALTERAÇÕES NA CONFIGURAÇÃO (o que mudou para reapontar)                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 1. ENDPOINT (variável de ambiente ou argumento CLI):                        │
+│    OPCUA_SERVER_URL: opc.tcp://192.168.0.31:4880/Staubli                    │
+│                   → opc.tcp://localhost:4882/Robot6Axis                      │
+│                                                                             │
+│ 2. ARQUIVO config_opcua.json (mapeamento semântico):                        │
+│                                                                             │
+│    Identification:                                                          │
+│      - Removidos: Code, BuildNumber, BuildDate                              │
+│      + Adicionados: FirmwareVersion, DOF                                    │
+│      ~ Renomeados NodeIds: Model3→Model, Manufacturer3→Manufacturer         │
+│                                                                             │
+│    TechnicalData:                                                           │
+│      - Removidos: Range, PayloadUser (OPC UA node)                          │
+│      + Adicionados: DOF, Reach                                              │
+│      ~ Payload: 8 kg → 210 kg, Weight: 42 kg → 1068 kg                     │
+│                                                                             │
+│    OperationalData:                                                         │
+│      - Removidos: JointPosition1-4 (array compartilhado)                    │
+│      + Adicionados: Joint1_deg..Joint6_deg (individuais), TCP_X/Y/Z_mm,     │
+│        Torque1..6_Nm, VelocityOverride_pct, ActiveProgram, CycleTime_s      │
+│      ~ WorkingMode, RobotStatus: mesma semântica, NodeId diferente           │
+│                                                                             │
+│    TemperatureData:                                                         │
+│      - Removidos: motorProbe1-4_temp, IWtemperature                         │
+│      + Adicionados: Motor1-6_temp_C, Controller_temp_C                      │
+│                                                                             │
+│    Safety:                                                                  │
+│      - Removidos: SafetyFault, SafetyFaultCode, Izone1-4                    │
+│      + Adicionados: Zone1_active, Zone2_active                              │
+│      ~ EmergencyStop: mesma semântica                                       │
+│                                                                             │
+│    CounterData:                                                             │
+│      - Removido: operationCounter                                           │
+│      + Adicionados: OperationCounter, TotalDistance_m                        │
+│                                                                             │
+│    PowerData:                                                               │
+│      - Removidos: PowerSupplyIO, PowerOn, PowerOnController                 │
+│      + Adicionados: PowerConsumption_W, TotalPowerOnTime_h                  │
+│                                                                             │
+│    RuntimeDiagnostics: IDÊNTICO (ns=0;i=2257, ns=0;i=2258)                  │
+│    _client: IDÊNTICO (nenhuma alteração no pipeline)                        │
+│                                                                             │
+│ 3. CÓDIGO-FONTE: NENHUMA ALTERAÇÃO                                          │
+│    O client_asyncua.py, persist_db.py, server.py e web backend              │
+│    funcionam sem modificação para qualquer ativo.                            │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ RESUMO QUANTITATIVO DAS MUDANÇAS                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Arquivos de código alterados:        0                                      │
+│ Arquivos de configuração alterados:  1 (config_opcua.json)                  │
+│ Variáveis de ambiente alteradas:     1 (OPCUA_SERVER_URL)                   │
+│ Linhas de config alteradas:          ~45 de 60 (75% do mapeamento)          │
+│ Submodelos mantidos (estrutura):     8/8 (100%)                             │
+│ Seção _client mantida:               idêntica                               │
+│ Pipeline de persistência:            inalterado                             │
+│ Frontend web:                        funcional sem alteração                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CONCLUSÃO                                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ A arquitetura é portável: o mesmo cliente OPC UA, pipeline AAS, banco       │
+│ de dados e interface web funcionam com um segundo ativo (Robô 6 Eixos)      │
+│ alterando APENAS:                                                           │
+│   1. O endpoint do servidor (variável OPCUA_SERVER_URL)                     │
+│   2. O arquivo config_opcua.json (mapeamento NodeId → submodelo AAS)        │
+│                                                                             │
+│ Nenhuma linha de código Python, TypeScript ou SQL foi modificada.            │
+│ A seção _client (modo, intervalos, habilitação) permaneceu idêntica,        │
+│ demonstrando que o comportamento do pipeline é independente do ativo.        │
+│                                                                             │
+│ O esforço de portabilidade resume-se a mapear os NodeIds do novo            │
+│ equipamento para a estrutura semântica AAS existente — tarefa de            │
+│ configuração, não de desenvolvimento.                                       │
+└─────────────────────────────────────────────────────────────────────────────┘

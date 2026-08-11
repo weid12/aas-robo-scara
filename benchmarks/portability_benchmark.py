@@ -312,28 +312,114 @@ def print_report(report: PortabilityReport) -> str:
     return text
 
 
+async def _run_server_background():
+    """Roda o servidor 6-axis simulado como task em background."""
+    from asyncua import Server, ua
+    import math
+    import random
+
+    server = Server()
+    await server.init()
+    server.set_endpoint("opc.tcp://0.0.0.0:4882/Robot6Axis")
+    server.set_server_name("Simulated 6-Axis Robot")
+
+    uri = "http://example.com/robot6axis/simulated"
+    idx = await server.register_namespace(uri)
+    objects = server.get_objects_node()
+    robot = await objects.add_object(idx, "Robot_6Axis")
+
+    # Variáveis simplificadas (só Double e String — evita BadTypeMismatch)
+    op = await robot.add_object(idx, "OperationalData")
+    joint_nodes = []
+    for i in range(1, 7):
+        joint_nodes.append(await op.add_variable(idx, f"Joint{i}_deg", 0.0, varianttype=ua.VariantType.Double))
+    tcp_x = await op.add_variable(idx, "TCP_X_mm", 0.0, varianttype=ua.VariantType.Double)
+    tcp_y = await op.add_variable(idx, "TCP_Y_mm", 0.0, varianttype=ua.VariantType.Double)
+    tcp_z = await op.add_variable(idx, "TCP_Z_mm", 0.0, varianttype=ua.VariantType.Double)
+    torque_nodes = []
+    for i in range(1, 7):
+        torque_nodes.append(await op.add_variable(idx, f"Torque{i}_Nm", 0.0, varianttype=ua.VariantType.Double))
+    status_n = await op.add_variable(idx, "RobotStatus", "running")
+    mode_n = await op.add_variable(idx, "WorkingMode", "automatic")
+    vel_n = await op.add_variable(idx, "VelocityOverride_pct", 75.0, varianttype=ua.VariantType.Double)
+
+    tmp = await robot.add_object(idx, "TemperatureData")
+    motor_temps = []
+    for i in range(1, 7):
+        motor_temps.append(await tmp.add_variable(idx, f"Motor{i}_temp_C", 30.0, varianttype=ua.VariantType.Double))
+    ctrl_temp = await tmp.add_variable(idx, "Controller_temp_C", 35.0, varianttype=ua.VariantType.Double)
+
+    cnt = await robot.add_object(idx, "CounterData")
+    op_counter = await cnt.add_variable(idx, "OperationCounter", 0.0, varianttype=ua.VariantType.Double)
+
+    sf = await robot.add_object(idx, "Safety")
+    await sf.add_variable(idx, "EmergencyStop", False, varianttype=ua.VariantType.Boolean)
+    await sf.add_variable(idx, "SafetyStatus", "normal")
+
+    pw = await robot.add_object(idx, "PowerData")
+    power_w = await pw.add_variable(idx, "PowerConsumption_W", 0.0, varianttype=ua.VariantType.Double)
+
+    ident = await robot.add_object(idx, "Identification")
+    await ident.add_variable(idx, "Model", "KR-210 R2700-2")
+    await ident.add_variable(idx, "Manufacturer", "SimRobot AG")
+    await ident.add_variable(idx, "SerialNumber", "6AX-2024-007")
+    await ident.add_variable(idx, "FirmwareVersion", "KSS 8.6.12")
+
+    await server.start()
+    logger.info("  [server] 6-Axis OPC UA Server rodando na porta 4882")
+
+    t = 0.0
+    cycles = 0
+    try:
+        while True:
+            await asyncio.sleep(0.2)
+            t += 0.2
+            phase = 2 * math.pi * t / 6.0
+            joints = [45*math.sin(phase), -30+20*math.sin(phase+0.5), 60+30*math.sin(phase+1),
+                      10*math.sin(phase*2), -15+15*math.cos(phase*2), 90*math.sin(phase*3)]
+            for i, jn in enumerate(joint_nodes):
+                await jn.write_value(joints[i])
+            await tcp_x.write_value(1200.0 + 400.0 * math.sin(phase))
+            await tcp_y.write_value(500.0 * math.cos(phase))
+            await tcp_z.write_value(800.0 + 200.0 * math.sin(phase + 1))
+            torques = [50+30*abs(math.cos(phase))+random.uniform(-2,2) for _ in range(6)]
+            for i, tn in enumerate(torque_nodes):
+                await tn.write_value(torques[i])
+            for i, mt in enumerate(motor_temps):
+                await mt.write_value(30.0 + i*2 + torques[i]*0.05)
+            new_c = int(t / 6.0)
+            if new_c > cycles:
+                cycles = new_c
+                await op_counter.write_value(float(cycles))
+            await power_w.write_value(800.0 + sum(torques)*2)
+    except asyncio.CancelledError:
+        await server.stop()
+
+
+def _run_server_background_sync():
+    """Wrapper síncrono para rodar o servidor em thread separada."""
+    asyncio.run(_run_server_background())
+
+
 async def async_main(args):
     """Entry point."""
     report = PortabilityReport()
 
-    # 1. Inicia servidor CNC simulado
+    # 1. Inicia servidor 6-Axis em thread separada (evita conflito de event loop no Windows)
     logger.info("═" * 75)
-    logger.info("  Iniciando servidor CNC simulado...")
+    logger.info("  Iniciando servidor 6-Axis simulado...")
     logger.info("═" * 75)
 
-    cnc_proc = subprocess.Popen(
-        [sys.executable, CNC_SERVER_SCRIPT],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-    )
-    await asyncio.sleep(3)  # aguarda boot do servidor
+    import threading
 
-    # Verifica se está rodando
-    if cnc_proc.poll() is not None:
-        logger.error("Servidor CNC falhou ao iniciar!")
-        stderr = cnc_proc.stderr.read().decode() if cnc_proc.stderr else ""
-        logger.error(stderr)
-        return
+    def _server_thread():
+        asyncio.run(_run_server_background_sync())
+
+    server_thread = threading.Thread(target=_server_thread, daemon=True)
+    server_thread.start()
+    await asyncio.sleep(4)  # aguarda boot
+
+    cnc_proc = None  # não usa subprocesso
 
     try:
         # 2. Executa aquisição na CNC simulada
@@ -392,10 +478,8 @@ async def async_main(args):
         )
 
     finally:
-        # Encerra servidor CNC
-        cnc_proc.terminate()
-        cnc_proc.wait(timeout=5)
-        logger.info("Servidor CNC encerrado.")
+        # O servidor roda em daemon thread — morre quando o processo principal termina
+        logger.info("Servidor 6-Axis encerrado (daemon thread).")
 
     # 6. Salva resultados
     out_path = Path(args.output)

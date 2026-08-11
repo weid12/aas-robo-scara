@@ -1,0 +1,32 @@
+{
+  "start_time": "2026-08-04T14:29:49.871745+00:00",
+  "end_time": "2026-08-04T14:34:49.873971+00:00",
+  "duration_seconds": 300.0022258758545,
+  "config": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "duration_seconds": 300,
+    "publishing_interval_ms": 200,
+    "clock_sync_method": "NTP",
+    "clock_offset_ms": 0.0,
+    "nodes_monitored": 0,
+    "output_dir": "benchmarks/results/"
+  },
+  "clock_offset_ms": 14408467.315769196,
+  "clock_offset_method": "NTP + half-RTT measurement",
+  "clock_offset_samples": 20,
+  "clock_offset_std_ms": 296.3957774500728,
+  "n_samples": 2178,
+  "latency_mean_ms": 43.90939370112424,
+  "latency_std_ms": 172.2395272443303,
+  "latency_median_ms": 5.178475379943848,
+  "latency_p95_ms": 45.39973735809327,
+  "latency_p99_ms": 843.1526494026184,
+  "latency_min_ms": -1.3853073120117188,
+  "latency_max_ms": 846.4585781097412,
+  "acquisition_rate_hz": 7.259946134203983,
+  "notifications_total": 2189,
+  "notifications_per_node_avg": 66.0,
+  "load_description": "33 nós monitorados | publishing_interval=200ms | duração=300.0s | sincronização=NTP | outliers descartados=11",
+  "nodes_monitored": 33,
+  "publishing_interval_ms": 200
+}

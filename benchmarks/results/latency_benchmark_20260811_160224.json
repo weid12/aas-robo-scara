@@ -1,0 +1,32 @@
+{
+  "start_time": "2026-08-11T20:01:23.976574+00:00",
+  "end_time": "2026-08-11T20:02:24.263689+00:00",
+  "duration_seconds": 60.28711485862732,
+  "config": {
+    "server_url": "opc.tcp://localhost:4882/Robot6Axis",
+    "duration_seconds": 60,
+    "publishing_interval_ms": 200,
+    "clock_sync_method": "NTP",
+    "clock_offset_ms": 0.0,
+    "nodes_monitored": 0,
+    "output_dir": "benchmarks/results/"
+  },
+  "clock_offset_ms": 492.83554553985596,
+  "clock_offset_method": "NTP + half-RTT measurement",
+  "clock_offset_samples": 20,
+  "clock_offset_std_ms": 284.5456184102081,
+  "n_samples": 61,
+  "latency_mean_ms": -373.89605983358916,
+  "latency_std_ms": 94.4835828893666,
+  "latency_median_ms": -375.24893283843994,
+  "latency_p95_ms": -283.2043409347534,
+  "latency_p99_ms": -144.2193269729619,
+  "latency_min_ms": -494.26653385162354,
+  "latency_max_ms": 57.01158046722412,
+  "acquisition_rate_hz": 1.0118248342625848,
+  "notifications_total": 68,
+  "notifications_per_node_avg": 1.8484848484848484,
+  "load_description": "33 nós monitorados | publishing_interval=200ms | duração=60.3s | sincronização=NTP | outliers descartados=7 | ciclos do robô (J3)=0",
+  "nodes_monitored": 33,
+  "publishing_interval_ms": 200
+}
