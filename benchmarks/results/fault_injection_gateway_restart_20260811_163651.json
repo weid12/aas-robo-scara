@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "snapshot_path": "C:\\Users\\weidson1.feitoza\\Documents\\Mestrado\\Teste\\aas-robo-scara - Copia\\acquisition\\client\\latest_data.json",
+    "fault_duration_s": 10.0
+  },
+  "test_name": "gateway_restart",
+  "test_description": "Kill/restart do cliente OPC UA (10.0s downtime) × 3 iterações",
+  "n_iterations": 3,
+  "fault_duration_s": 10.0,
+  "events": [
+    {
+      "test_name": "gateway_restart",
+      "fault_injected_at": 0.0,
+      "fault_detected_at": 0.0,
+      "recovery_at": 0.0,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 0.0,
+      "samples_lost": 0,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 0,
+      "last_valid_value": null,
+      "first_recovered_value": null,
+      "fallback_behavior": "",
+      "notes": "Processo não encontrado — executar manualmente"
+    },
+    {
+      "test_name": "gateway_restart",
+      "fault_injected_at": 0.0,
+      "fault_detected_at": 0.0,
+      "recovery_at": 0.0,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 0.0,
+      "samples_lost": 0,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 0,
+      "last_valid_value": null,
+      "first_recovered_value": null,
+      "fallback_behavior": "",
+      "notes": "Processo não encontrado — executar manualmente"
+    },
+    {
+      "test_name": "gateway_restart",
+      "fault_injected_at": 0.0,
+      "fault_detected_at": 0.0,
+      "recovery_at": 0.0,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 0.0,
+      "samples_lost": 0,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 0,
+      "last_valid_value": null,
+      "first_recovered_value": null,
+      "fallback_behavior": "",
+      "notes": "Processo não encontrado — executar manualmente"
+    }
+  ],
+  "detection_time_mean_ms": 0.0,
+  "detection_time_std_ms": 0.0,
+  "detection_time_p95_ms": 0.0,
+  "detection_time_max_ms": 0.0,
+  "recovery_time_mean_ms": 0.0,
+  "recovery_time_std_ms": 0.0,
+  "recovery_time_p95_ms": 0.0,
+  "recovery_time_max_ms": 0.0,
+  "total_samples_lost": 0,
+  "samples_lost_per_event_mean": 0.0,
+  "fallback_behaviors": {
+    "unknown": 3
+  }
+}

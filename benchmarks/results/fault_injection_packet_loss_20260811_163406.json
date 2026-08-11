@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "loss_pct": 20,
+    "method": "intermittent_firewall"
+  },
+  "test_name": "packet_loss",
+  "test_description": "Perda de pacotes simulada (~20%) por 30.0s × 3 iterações",
+  "n_iterations": 3,
+  "fault_duration_s": 30.0,
+  "events": [
+    {
+      "test_name": "packet_loss",
+      "fault_injected_at": 1786480332.3787775,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480363.038453,
+      "detection_time_ms": 20.000000000000004,
+      "recovery_time_ms": 30659.67559814453,
+      "samples_lost": 32,
+      "samples_before": 28,
+      "samples_after": 0,
+      "expected_samples_during": 60,
+      "last_valid_value": "2026-08-11T20:32:11.425284+00:00",
+      "first_recovered_value": "2026-08-11T20:32:43.017775+00:00",
+      "fallback_behavior": "partial_loss_then_recovered",
+      "notes": ""
+    },
+    {
+      "test_name": "packet_loss",
+      "fault_injected_at": 1786480373.0442905,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480404.6673582,
+      "detection_time_ms": 20.000000000000004,
+      "recovery_time_ms": 31623.067617416382,
+      "samples_lost": 32,
+      "samples_before": 28,
+      "samples_after": 0,
+      "expected_samples_during": 60,
+      "last_valid_value": "2026-08-11T20:32:52.687609+00:00",
+      "first_recovered_value": "2026-08-11T20:33:24.637836+00:00",
+      "fallback_behavior": "partial_loss_then_recovered",
+      "notes": ""
+    },
+    {
+      "test_name": "packet_loss",
+      "fault_injected_at": 1786480414.6736884,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480446.4633741,
+      "detection_time_ms": 20.000000000000004,
+      "recovery_time_ms": 31789.68572616577,
+      "samples_lost": 33,
+      "samples_before": 27,
+      "samples_after": 0,
+      "expected_samples_during": 60,
+      "last_valid_value": "2026-08-11T20:33:34.291614+00:00",
+      "first_recovered_value": "2026-08-11T20:34:06.407343+00:00",
+      "fallback_behavior": "partial_loss_then_recovered",
+      "notes": ""
+    }
+  ],
+  "detection_time_mean_ms": 20.000000000000004,
+  "detection_time_std_ms": 0.0,
+  "detection_time_p95_ms": 20.000000000000004,
+  "detection_time_max_ms": 20.000000000000004,
+  "recovery_time_mean_ms": 31357.476313908894,
+  "recovery_time_std_ms": 498.0861891491937,
+  "recovery_time_p95_ms": 31773.023915290833,
+  "recovery_time_max_ms": 31789.68572616577,
+  "total_samples_lost": 97,
+  "samples_lost_per_event_mean": 32.333333333333336,
+  "fallback_behaviors": {
+    "partial_loss_then_recovered": 3
+  }
+}
