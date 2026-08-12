@@ -191,30 +191,29 @@ async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[flo
     offset_mean = float(np.mean(filtered))
     offset_std = float(np.std(filtered))
 
-    # ─── Detecção de timezone mismatch ───────────────────────────────────
-    # Se o offset é múltiplo aproximado de 1 hora (±30s), o controlador
-    # provavelmente reporta hora local como UTC.
+    # ─── Detecção de timezone mismatch (informativo, NÃO arredonda) ─────
+    # Se o offset é múltiplo aproximado de 1 hora, loga um aviso informativo
+    # mas usa o valor medido real (inclui os segundos de erro do relógio).
     abs_offset_h = abs(offset_mean) / 3_600_000
     nearest_hour = round(abs_offset_h)
-    remainder_ms = abs(offset_mean) - nearest_hour * 3_600_000
+    remainder_s = (abs(offset_mean) - nearest_hour * 3_600_000) / 1000
 
-    if nearest_hour >= 1 and abs(remainder_ms) < 60_000:
+    if nearest_hour >= 1 and abs(remainder_s) < 120:
         sign = 1 if offset_mean > 0 else -1
-        corrected_offset = sign * nearest_hour * 3_600_000
         logger.warning(
-            "TIMEZONE MISMATCH DETECTADO: offset=%.0f ms ≈ %+dh. "
-            "O controlador provavelmente reporta hora local como UTC. "
-            "Usando compensação fixa de %+dh.",
-            offset_mean, sign * nearest_hour, sign * nearest_hour
+            "TIMEZONE MISMATCH DETECTADO: offset=%.0f ms ≈ %+dh %+.1fs. "
+            "O controlador reporta hora local como UTC (fuso %+dh). "
+            "Usando offset MEDIDO completo (%.0f ms) — inclui erro residual do relógio.",
+            offset_mean, sign * nearest_hour, remainder_s,
+            sign * nearest_hour, offset_mean
         )
-        offset_mean = corrected_offset
-        # Recalcula std apenas com o resíduo (jitter de rede)
-        residuals = arr - corrected_offset
-        offset_std = float(np.std(residuals))
+        # NÃO arredonda — usa o valor medido real que já inclui o offset completo
+        # Recalcula std apenas com o jitter (variação entre amostras)
+        offset_std = float(np.std(filtered - offset_mean))
 
     logger.info(
-        "Clock offset: %.2f ± %.2f ms (%d amostras válidas de %d) | RTT médio: %.1f ms",
-        offset_mean, offset_std, len(filtered), n_samples, float(np.mean(rtts))
+        "Clock offset FINAL: %.2f ms (%.3f s) ± %.2f ms | RTT médio: %.1f ms",
+        offset_mean, offset_mean / 1000, offset_std, float(np.mean(rtts))
     )
 
     return offset_mean, offset_std
@@ -506,34 +505,19 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
         latencies = np.array([s.latency_ms for s in samples])
 
         # ─── Detecção e compensação de offset residual ───────────────────────
-        # Após compensar o timezone (4h), pode restar um offset fixo do relógio
-        # do controlador (não sincronizado via NTP). Se a mediana > 1000ms ou
-        # < -1000ms, é offset de relógio, não latência de rede real.
-        # A latência de rede OPC UA típica em LAN é 1-200ms.
+        # Se após a compensação do offset medido a mediana ainda é > 5s,
+        # significa que o offset drift entre a medição e a coleta foi significativo.
+        # Nesse caso, corrige com a mediana como bias adicional.
         median_raw = float(np.median(latencies))
         residual_offset_ms = 0.0
 
-        if abs(median_raw) > 1000:
-            # Offset residual detectado — o mínimo das latências é a melhor
-            # estimativa da latência real mínima (1-way delay de rede).
-            # O resto é offset de relógio.
-            min_latency = float(np.min(latencies))
-            # Correção: subtrai o offset de modo que min ≈ 0 (one-way delay mínimo)
-            # Usamos percentil 5 para ser mais robusto que o mínimo absoluto.
-            p5 = float(np.percentile(latencies, 5))
-            residual_offset_ms = p5
-            logger.warning(
-                "OFFSET RESIDUAL DETECTADO: mediana=%.0f ms. "
-                "O relógio do controlador tem ~%.1f s de erro em relação ao UTC. "
-                "Aplicando correção de %.0f ms (P5 das latências brutas).",
-                median_raw, median_raw / 1000, residual_offset_ms
-            )
-            latencies = latencies - residual_offset_ms
-        elif median_raw < -1000:
+        if abs(median_raw) > 5000:
             residual_offset_ms = median_raw
             logger.warning(
-                "OFFSET RESIDUAL NEGATIVO: mediana=%.0f ms. Corrigindo.",
-                median_raw
+                "OFFSET RESIDUAL DETECTADO: mediana=%.0f ms (~%.1f s). "
+                "Drift entre medição do offset e coleta. "
+                "Aplicando correção adicional de %.0f ms.",
+                median_raw, median_raw / 1000, residual_offset_ms
             )
             latencies = latencies - residual_offset_ms
 
