@@ -123,100 +123,100 @@ class BenchmarkResults:
 
 # ─── Medição de Offset de Relógio ────────────────────────────────────────────────
 
-async def measure_clock_offset(client: Client, n_samples: int = 20) -> Tuple[float, float]:
+async def measure_clock_offset(client: Client, n_samples: int = 30) -> Tuple[float, float]:
     """
-    Mede o offset entre o relógio do servidor OPC UA e o cliente.
+    Sincronização de relógios via método NTP (half-RTT).
 
-    Método: lê o nó ServerStatus.CurrentTime (ns=0;i=2258) repetidamente
-    e calcula a diferença (T_client - T_server) usando o método de half-RTT:
-        offset ≈ T_client_mid - T_server
+    Protocolo IEEE 1588-like adaptado para OPC UA:
+    1. Lê ServerStatus.CurrentTime N vezes
+    2. Para cada leitura: offset_i = T_client_mid - T_server
+       onde T_client_mid = (T_antes + T_depois) / 2 (compensa one-way delay)
+    3. Filtra amostras com RTT > mediana×2 (descarta congestionamento)
+    4. Usa a mediana dos offsets filtrados (mais robusto que média)
 
-    NOTA: Se o controlador reporta hora local como UTC (ex: Manaus UTC-4),
-    o offset será ~14.4M ms (4h). Nesse caso, arredondamos para o fuso
-    horário mais próximo e usamos compensação fixa.
+    O offset resultante é a diferença TOTAL entre os relógios, incluindo:
+    - Timezone mismatch (se houver)
+    - Drift do relógio do controlador
+    - Erro de configuração NTP
 
     Args:
         client: Cliente OPC UA conectado
-        n_samples: Número de amostras para estimar offset
+        n_samples: Número de amostras (default: 30 para maior precisão)
 
     Returns:
-        Tupla (offset_medio_ms, desvio_padrao_ms)
-        offset > 0 significa que o relógio do cliente está adiantado
+        Tupla (offset_ms, std_ms)
+        offset > 0 = cliente adiantado em relação ao servidor
     """
-    server_time_node = client.get_node("ns=0;i=2258")  # Server.ServerStatus.CurrentTime
+    server_time_node = client.get_node("ns=0;i=2258")
     offsets = []
     rtts = []
+
+    logger.info("  Medindo offset de relógio (%d amostras, método NTP half-RTT)...", n_samples)
 
     for i in range(n_samples):
         t_before = time.time()
         server_time = await server_time_node.read_value()
         t_after = time.time()
 
-        if server_time is None:
+        if not isinstance(server_time, datetime):
             continue
 
-        # Converte para epoch
-        if isinstance(server_time, datetime):
-            t_server = server_time.timestamp()
-        else:
-            continue
-
-        # Half-RTT: estima o instante real da leitura como ponto médio
+        t_server = server_time.timestamp()
         t_client_mid = (t_before + t_after) / 2
-        rtt = (t_after - t_before) * 1000  # ms
+        rtt = (t_after - t_before) * 1000
 
-        offset = (t_client_mid - t_server) * 1000  # ms (client - server)
+        offset = (t_client_mid - t_server) * 1000
         offsets.append(offset)
         rtts.append(rtt)
-
-        logger.debug(
-            "Offset sample %d: offset=%.2f ms, RTT=%.2f ms",
-            i + 1, offset, rtt
-        )
         await asyncio.sleep(0.1)
 
     if not offsets:
-        logger.warning("Não foi possível medir offset de relógio")
+        logger.warning("Não foi possível medir offset de relógio!")
         return 0.0, 0.0
 
-    # Remove outliers (> 2σ) e recalcula
-    arr = np.array(offsets)
-    mean = np.mean(arr)
-    std = np.std(arr)
-    filtered = arr[np.abs(arr - mean) < 2 * std]
+    arr_offsets = np.array(offsets)
+    arr_rtts = np.array(rtts)
 
-    if len(filtered) < 3:
-        filtered = arr
+    # Filtra amostras com RTT alto (congestionamento distorce a medição)
+    rtt_median = float(np.median(arr_rtts))
+    rtt_threshold = max(rtt_median * 2, 5.0)  # no mínimo 5ms de threshold
+    mask = arr_rtts <= rtt_threshold
+    filtered = arr_offsets[mask]
 
-    offset_mean = float(np.mean(filtered))
+    if len(filtered) < 5:
+        filtered = arr_offsets  # fallback se muitas foram descartadas
+
+    # Usa MEDIANA (mais robusto a outliers que a média)
+    offset_ms = float(np.median(filtered))
     offset_std = float(np.std(filtered))
 
-    # ─── Detecção de timezone mismatch (informativo, NÃO arredonda) ─────
-    # Se o offset é múltiplo aproximado de 1 hora, loga um aviso informativo
-    # mas usa o valor medido real (inclui os segundos de erro do relógio).
-    abs_offset_h = abs(offset_mean) / 3_600_000
-    nearest_hour = round(abs_offset_h)
-    remainder_s = (abs(offset_mean) - nearest_hour * 3_600_000) / 1000
+    return offset_ms, offset_std
 
-    if nearest_hour >= 1 and abs(remainder_s) < 120:
-        sign = 1 if offset_mean > 0 else -1
-        logger.warning(
-            "TIMEZONE MISMATCH DETECTADO: offset=%.0f ms ≈ %+dh %+.1fs. "
-            "O controlador reporta hora local como UTC (fuso %+dh). "
-            "Usando offset MEDIDO completo (%.0f ms) — inclui erro residual do relógio.",
-            offset_mean, sign * nearest_hour, remainder_s,
-            sign * nearest_hour, offset_mean
-        )
-        # NÃO arredonda — usa o valor medido real que já inclui o offset completo
-        # Recalcula std apenas com o jitter (variação entre amostras)
-        offset_std = float(np.std(filtered - offset_mean))
 
-    logger.info(
-        "Clock offset FINAL: %.2f ms (%.3f s) ± %.2f ms | RTT médio: %.1f ms",
-        offset_mean, offset_mean / 1000, offset_std, float(np.mean(rtts))
-    )
+def _format_clock_report(
+    label: str,
+    pc_time_utc: str,
+    server_time_utc: str,
+    offset_ms: float,
+    offset_std: float,
+    rtt_avg_ms: float,
+) -> str:
+    """Formata relatório de verificação de relógio."""
+    offset_s = offset_ms / 1000
+    hours = int(offset_s // 3600)
+    remainder_s = offset_s - hours * 3600
 
-    return offset_mean, offset_std
+    lines = []
+    lines.append(f"  ┌─── {label} ───────────────────────────────────────────────┐")
+    lines.append(f"  │ PC (UTC):          {pc_time_utc:<40}│")
+    lines.append(f"  │ Controlador:       {server_time_utc:<40}│")
+    lines.append(f"  │ Offset:            {offset_ms:+.1f} ms ({offset_s:+.3f} s){'':>16}│")
+    if abs(hours) >= 1:
+        lines.append(f"  │ Decomposição:      {hours:+d}h {remainder_s:+.3f}s (timezone + drift){'':>6}│")
+    lines.append(f"  │ Jitter (DP):       ±{offset_std:.1f} ms{'':>33}│")
+    lines.append(f"  │ RTT médio:         {rtt_avg_ms:.1f} ms{'':>34}│")
+    lines.append(f"  └──────────────────────────────────────────────────────────────┘")
+    return "\n".join(lines)
 
 
 # ─── Handler de Subscription com Timestamp ────────────────────────────────────────
@@ -421,14 +421,38 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
         raise
 
     try:
-        # ─── 1. Medir offset de relógio ─────────────────────────────────────
+        # ─── 1. Verificação PRÉ-ensaio dos relógios (NTP half-RTT) ──────────
         logger.info("")
-        logger.info("─── Fase 1: Medição de offset de relógio ───")
-        offset_ms, offset_std = await measure_clock_offset(client, n_samples=20)
+        logger.info("─── Fase 1: Verificação de sincronização de relógios (PRÉ-ensaio) ───")
+
+        # Lê horário atual de ambos
+        server_time_node = client.get_node("ns=0;i=2258")
+        t_pc_before = time.time()
+        srv_time_before = await server_time_node.read_value()
+        pc_utc_str = datetime.fromtimestamp(t_pc_before, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        srv_utc_str = srv_time_before.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] if isinstance(srv_time_before, datetime) else "N/A"
+
+        # Mede offset com 30 amostras
+        offset_ms, offset_std = await measure_clock_offset(client, n_samples=30)
+
+        # Calcula RTT médio para o relatório
+        rtt_samples = []
+        for _ in range(5):
+            t0 = time.time()
+            await server_time_node.read_value()
+            rtt_samples.append((time.time() - t0) * 1000)
+        rtt_avg = float(np.mean(rtt_samples))
+
+        # Relatório PRÉ
+        pre_report = _format_clock_report(
+            "PRÉ-ENSAIO", pc_utc_str, srv_utc_str, offset_ms, offset_std, rtt_avg
+        )
+        logger.info("\n%s", pre_report)
+
         results.clock_offset_ms = offset_ms
         results.clock_offset_std_ms = offset_std
-        results.clock_offset_method = f"{cfg.clock_sync_method} + half-RTT measurement"
-        results.clock_offset_samples = 20
+        results.clock_offset_method = f"NTP half-RTT (30 amostras, filtragem RTT, mediana)"
+        results.clock_offset_samples = 30
 
         # ─── 2. Carregar nós a monitorar ─────────────────────────────────────
         logger.info("")
@@ -484,9 +508,32 @@ async def run_benchmark(cfg: BenchmarkConfig) -> BenchmarkResults:
         results.end_time = datetime.now(timezone.utc).isoformat()
         results.duration_seconds = time.time() - start
 
-        # ─── 5. Cálculo de estatísticas ─────────────────────────────────────
+        # ─── 5. Verificação PÓS-ensaio dos relógios ─────────────────────────
         logger.info("")
-        logger.info("─── Fase 4: Análise estatística ───")
+        logger.info("─── Fase 4: Verificação de sincronização (PÓS-ensaio) ───")
+
+        t_pc_after = time.time()
+        srv_time_after = await server_time_node.read_value()
+        pc_utc_after = datetime.fromtimestamp(t_pc_after, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        srv_utc_after = srv_time_after.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] if isinstance(srv_time_after, datetime) else "N/A"
+
+        offset_post_ms, offset_post_std = await measure_clock_offset(client, n_samples=10)
+        drift_during_test = offset_post_ms - offset_ms
+        drift_rate_ms_per_min = drift_during_test / (results.duration_seconds / 60) if results.duration_seconds > 0 else 0
+
+        post_report = _format_clock_report(
+            "PÓS-ENSAIO", pc_utc_after, srv_utc_after, offset_post_ms, offset_post_std, rtt_avg
+        )
+        logger.info("\n%s", post_report)
+        logger.info("  Drift durante o ensaio: %+.1f ms (%.2f ms/min)", drift_during_test, drift_rate_ms_per_min)
+
+        # Se drift > 100ms durante o ensaio, avisa
+        if abs(drift_during_test) > 100:
+            logger.warning("  ⚠ Drift significativo (%.0f ms) — relógios instáveis!", drift_during_test)
+
+        # ─── 6. Cálculo de estatísticas ─────────────────────────────────────
+        logger.info("")
+        logger.info("─── Fase 5: Análise estatística ───")
 
         samples = handler.samples
         results.n_samples = len(samples)
