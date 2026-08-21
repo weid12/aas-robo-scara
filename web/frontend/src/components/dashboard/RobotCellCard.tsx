@@ -1,6 +1,7 @@
 import { Card, CardContent, Typography, Box, Grid } from "@mui/material";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import type { RobotState } from "../../types/robot";
+import { formatNumber } from "../../lib/utils";
 
 interface RobotCellCardProps {
   latest?: RobotState | null;
@@ -38,7 +39,7 @@ export function RobotCellCard({ latest }: RobotCellCardProps) {
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Current mode: {latest?.mode ?? "N/A"} · Temp:{" "}
-              {latest?.temperature_c != null ? `${latest.temperature_c.toFixed(1)} °C` : "N/A"}
+              {latest?.temperature_c != null ? `${formatNumber(latest.temperature_c, 1)} °C` : "N/A"}
             </Typography>
           </Box>
         </Box>
@@ -53,7 +54,7 @@ export function RobotCellCard({ latest }: RobotCellCardProps) {
                 </Typography>
                 <Typography variant="h6" fontWeight={600}>
                   {typeof value === "number"
-                    ? `${value.toFixed(1)}${field.suffix ?? ""}`
+                    ? `${formatNumber(value, 1)}${field.suffix ?? ""}`
                     : "N/A"}
                 </Typography>
               </Grid>

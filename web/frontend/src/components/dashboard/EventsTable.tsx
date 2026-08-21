@@ -1,4 +1,5 @@
 import { useState, forwardRef } from "react";
+import { formatNumber } from "../../lib/utils";
 import {
   Card,
   CardContent,
@@ -156,7 +157,7 @@ export function EventsTable({ history }: EventsTableProps) {
               />
             </TableCell>
             <TableCell sx={{ color: "#e0e0e0", fontSize: "0.8rem", padding: "8px 4px" }}>{row.mode}</TableCell>
-            <TableCell sx={{ color: "#e0e0e0", fontWeight: 500, fontSize: "0.8rem", padding: "8px 4px" }}>{row.temperature_c?.toFixed(1) ?? "N/A"}</TableCell>
+            <TableCell sx={{ color: "#e0e0e0", fontWeight: 500, fontSize: "0.8rem", padding: "8px 4px" }}>{row.temperature_c != null ? formatNumber(row.temperature_c, 1) : "N/A"}</TableCell>
           </TableRow>
         ))}
       </TableBody>

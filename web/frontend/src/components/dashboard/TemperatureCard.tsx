@@ -2,6 +2,7 @@ import { Card, CardContent, Typography, Box, Grid, useTheme } from "@mui/materia
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import DeviceThermostatIcon from "@mui/icons-material/DeviceThermostat";
 import type { RobotState } from "../../types/robot";
+import { formatNumber } from "../../lib/utils";
 
 interface TemperatureCardProps {
     latest?: RobotState | null;
@@ -121,7 +122,7 @@ export function TemperatureCard({ latest }: TemperatureCardProps) {
                                             }}
                                         >
                                             <Typography variant="h6" fontWeight={700} sx={{ color: "#fff", lineHeight: 1 }}>
-                                                {axis.temp.toFixed(1)}
+                                                {formatNumber(axis.temp, 1)}
                                             </Typography>
                                             <Typography variant="caption" sx={{ color: "#fff", fontSize: "0.65rem", opacity: 0.9 }}>
                                                 °C

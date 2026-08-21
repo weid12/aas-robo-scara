@@ -1,4 +1,5 @@
 import styles from "./DataCard.module.css";
+import { formatNumber } from "../../lib/utils";
 
 /**
  * Card para exibir métricas e estatísticas
@@ -25,7 +26,7 @@ export default function DataCard({ title, value, unit, subtitle, icon, trend, co
         {trend !== undefined && (
           <div className={`${styles.trend} ${trend >= 0 ? styles.trendUp : styles.trendDown}`}>
             <span className={styles.trendIcon}>{trend >= 0 ? "↑" : "↓"}</span>
-            <span className={styles.trendValue}>{Math.abs(trend).toFixed(1)}%</span>
+            <span className={styles.trendValue}>{formatNumber(Math.abs(trend), 1)}%</span>
           </div>
         )}
       </div>

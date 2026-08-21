@@ -4,6 +4,35 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs) {
     return twMerge(clsx(inputs));
 }
+
+// ─── Number Formatting (English locale: comma=thousands, dot=decimal) ────────
+const enFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
+const enFormatter1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const enFormatterInt = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+
+/**
+ * Format a number with English locale (comma as thousands separator, dot as decimal).
+ * @param value - The number to format
+ * @param decimals - Number of decimal places (default: 2)
+ */
+export function formatNumber(value, decimals = 2) {
+    if (value == null || isNaN(value)) return "N/A";
+    if (decimals === 0) return enFormatterInt.format(value);
+    if (decimals === 1) return enFormatter1.format(value);
+    return new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+    }).format(value);
+}
+
+/**
+ * Format an integer with thousands separators (English locale).
+ */
+export function formatInt(value) {
+    if (value == null || isNaN(value)) return "N/A";
+    return enFormatterInt.format(value);
+}
+
 // Utility function to format a number with currency
 export function formatCurrency(amount, currency = "USD", options) {
     return new Intl.NumberFormat("en-US", {

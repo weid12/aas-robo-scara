@@ -22,6 +22,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import styles from "./AAS_ScaraMonitoringHub.module.css";
 import { getHistory, getLatestState, getSummaryMetrics, getConnectionCount } from "../../services/api";
+import { formatInt } from "../../lib/utils";
 import type { RobotState, RobotSummary } from "../../types/robot";
 import { StatusCard } from "../../components/dashboard/StatusCard";
 import { MetricCard } from "../../components/dashboard/MetricCard";
@@ -128,7 +129,7 @@ export default function AAS_ScaraMonitoringHub() {
       },
       {
         label: "Cycles",
-        value: connectionCount !== null ? String(connectionCount) : "—",
+        value: connectionCount !== null ? formatInt(connectionCount) : "—",
         helper: "OPC UA connections",
         icon: <AllInclusiveIcon sx={{ color: "#e94f88" }} />,
       },
