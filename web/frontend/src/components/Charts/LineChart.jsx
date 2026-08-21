@@ -30,8 +30,31 @@ export default function LineChart({ data, title, unit, color }) {
     // Limpar canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Extrair valores
-    const values = data.map((d) => d.v);
+    // Extrair valores — downsample if too many points (keep min/max per bucket for visibility)
+    let plotData = data;
+    const maxPoints = Math.min(Math.floor(chartWidth), 600);
+    if (data.length > maxPoints) {
+      // LTTB-like: keep min and max per bucket to preserve visual peaks/valleys
+      const bucketSize = Math.ceil(data.length / maxPoints);
+      plotData = [];
+      for (let i = 0; i < data.length; i += bucketSize) {
+        const bucket = data.slice(i, i + bucketSize);
+        const minPt = bucket.reduce((a, b) => (b.v < a.v ? b : a), bucket[0]);
+        const maxPt = bucket.reduce((a, b) => (b.v > a.v ? b : a), bucket[0]);
+        // Add in order of appearance to keep time ordering
+        const minIdx = bucket.indexOf(minPt);
+        const maxIdx = bucket.indexOf(maxPt);
+        if (minIdx <= maxIdx) {
+          plotData.push(minPt);
+          if (minPt !== maxPt) plotData.push(maxPt);
+        } else {
+          plotData.push(maxPt);
+          if (minPt !== maxPt) plotData.push(minPt);
+        }
+      }
+    }
+
+    const values = plotData.map((d) => d.v);
     const minValue = Math.min(...values);
     const maxValue = Math.max(...values);
     const valueRange = maxValue - minValue || 1;
@@ -47,7 +70,7 @@ export default function LineChart({ data, title, unit, color }) {
 
     // Função para mapear índice para coordenada X
     const scaleX = (index) => {
-      return padding.left + (index / (data.length - 1 || 1)) * chartWidth;
+      return padding.left + (index / (plotData.length - 1 || 1)) * chartWidth;
     };
 
     // Desenhar grid horizontal
@@ -76,7 +99,7 @@ export default function LineChart({ data, title, unit, color }) {
     ctx.lineCap = "round";
 
     ctx.beginPath();
-    data.forEach((point, index) => {
+    plotData.forEach((point, index) => {
       const x = scaleX(index);
       const y = scaleY(point.v);
 
@@ -90,9 +113,8 @@ export default function LineChart({ data, title, unit, color }) {
 
     // Desenhar pontos
     ctx.fillStyle = color || "#e94f88";
-    if (data.length < 50) {
-      // Só desenhar pontos se não houver muitos dados
-      data.forEach((point, index) => {
+    if (plotData.length < 50) {
+      plotData.forEach((point, index) => {
         const x = scaleX(index);
         const y = scaleY(point.v);
         ctx.beginPath();
@@ -115,19 +137,19 @@ export default function LineChart({ data, title, unit, color }) {
     ctx.font = "10px sans-serif";
     ctx.textAlign = "center";
 
-    const labelCount = Math.min(6, data.length);
+    const labelCount = Math.min(6, plotData.length);
     // Detect if range spans more than 1 day
     let spanDays = 0;
     try {
-      const firstDate = new Date(data[0].t);
-      const lastDate = new Date(data[data.length - 1].t);
+      const firstDate = new Date(plotData[0].t);
+      const lastDate = new Date(plotData[plotData.length - 1].t);
       spanDays = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
     } catch {}
 
     for (let i = 0; i < labelCount; i++) {
-      const index = Math.floor((i / (labelCount - 1 || 1)) * (data.length - 1));
+      const index = Math.floor((i / (labelCount - 1 || 1)) * (plotData.length - 1));
       const x = scaleX(index);
-      const timestamp = data[index].t;
+      const timestamp = plotData[index].t;
 
       let label = "";
       try {

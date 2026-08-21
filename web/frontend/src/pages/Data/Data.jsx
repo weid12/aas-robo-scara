@@ -65,10 +65,19 @@ export default function Data() {
   const loadSeries = async (sel, rangeOverride) => {
     if (!sel) return;
     const activeRange = rangeOverride !== undefined ? rangeOverride : range;
+    
+    // Calculate span in days to adjust limit
+    let spanDays = 0;
+    if (activeRange?.from instanceof Date && activeRange?.to instanceof Date) {
+      spanDays = (activeRange.to - activeRange.from) / (1000 * 60 * 60 * 24);
+    }
+    // More points for longer ranges to see variations
+    const limit = spanDays > 1 ? "2000" : "500";
+    
     const params = new URLSearchParams({
       submodel: sel.submodel,
       path: sel.path,
-      limit: "300",
+      limit,
     });
     if (activeRange?.from instanceof Date && !Number.isNaN(activeRange.from.getTime())) {
       params.set("start", activeRange.from.toISOString());
