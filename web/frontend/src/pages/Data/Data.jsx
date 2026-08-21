@@ -25,7 +25,7 @@ export default function Data() {
 
   // Bytes -> human-readable string (KB/MB/GB)
   const formatBytes = (bytes) => {
-    if (bytes == null) return "N/D";
+    if (bytes == null) return "N/A";
     const units = ["B", "KB", "MB", "GB", "TB"];
     let v = Number(bytes);
     let i = 0;
@@ -33,13 +33,13 @@ export default function Data() {
       v /= 1024;
       i++;
     }
-    return `${v.toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
+    return `${new Intl.NumberFormat('en-US', { minimumFractionDigits: i === 0 ? 0 : 2, maximumFractionDigits: i === 0 ? 0 : 2 }).format(v)} ${units[i]}`;
   };
 
-  // Format number in English decimal format
+  // Format number in English locale (comma=thousands, dot=decimal)
   const formatBrNumber = (num, decimals = 2) => {
-    if (num == null || isNaN(num)) return "N/D";
-    return new Intl.NumberFormat('pt-BR', {
+    if (num == null || isNaN(num)) return "N/A";
+    return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals
     }).format(Number(num));
@@ -134,8 +134,8 @@ export default function Data() {
   }, [series]);
 
   const formatDbSize = (bytes) => {
-    if (bytes == null) return "N/D";
-    const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (bytes == null) return "N/A";
+    const nf2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const mb = Number(bytes) / (1024 * 1024);
     if (mb >= 1024) {
       const gb = mb / 1024;
@@ -148,7 +148,7 @@ export default function Data() {
 
   const formatIntBr = (n) => {
     try {
-      return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(Number(n || 0));
+      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(n || 0));
     } catch {
       return String(n ?? 0);
     }
