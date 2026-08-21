@@ -62,20 +62,20 @@ export default function Data() {
     const data = await fetchJSON("/api/data/latest");
     setLatest(data.metrics || []);
   };
-  const loadSeries = async (sel) => {
+  const loadSeries = async (sel, rangeOverride) => {
     if (!sel) return;
+    const activeRange = rangeOverride !== undefined ? rangeOverride : range;
     const params = new URLSearchParams({
       submodel: sel.submodel,
       path: sel.path,
       limit: "300",
     });
-    if (range?.from instanceof Date && !Number.isNaN(range.from.getTime())) {
-      params.set("start", range.from.toISOString());
+    if (activeRange?.from instanceof Date && !Number.isNaN(activeRange.from.getTime())) {
+      params.set("start", activeRange.from.toISOString());
     }
-    if (range?.to instanceof Date && !Number.isNaN(range.to.getTime())) {
-      params.set("end", range.to.toISOString());
+    if (activeRange?.to instanceof Date && !Number.isNaN(activeRange.to.getTime())) {
+      params.set("end", activeRange.to.toISOString());
     }
-    // no time filter
     const data = await fetchJSON(`/api/data/timeseries?${params.toString()}`);
     setSeries(data.rows || []);
   };
@@ -285,7 +285,7 @@ export default function Data() {
               value={range}
               onChange={(r) => {
                 setRange(r);
-                if (selected) loadSeries(selected).catch(() => { });
+                if (selected) loadSeries(selected, r).catch(() => { });
               }}
             />
           </div>
