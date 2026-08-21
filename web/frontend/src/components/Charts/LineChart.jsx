@@ -115,22 +115,33 @@ export default function LineChart({ data, title, unit, color }) {
     ctx.font = "10px sans-serif";
     ctx.textAlign = "center";
 
-    const labelCount = Math.min(5, data.length);
+    const labelCount = Math.min(6, data.length);
+    // Detect if range spans more than 1 day
+    let spanDays = 0;
+    try {
+      const firstDate = new Date(data[0].t);
+      const lastDate = new Date(data[data.length - 1].t);
+      spanDays = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
+    } catch {}
+
     for (let i = 0; i < labelCount; i++) {
       const index = Math.floor((i / (labelCount - 1 || 1)) * (data.length - 1));
       const x = scaleX(index);
       const timestamp = data[index].t;
 
-      // Formatar timestamp (pegar apenas hora:minuto)
       let label = "";
       try {
         const date = new Date(timestamp);
-        label = date.toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        if (spanDays > 1) {
+          // Show date + time for multi-day ranges
+          label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+                  " " + date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+        } else {
+          // Show only time for same-day data
+          label = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+        }
       } catch {
-        label = timestamp.slice(11, 16);
+        label = timestamp?.slice(11, 16) || "";
       }
 
       ctx.fillText(label, x, padding.top + chartHeight + 20);
@@ -153,7 +164,7 @@ export default function LineChart({ data, title, unit, color }) {
   if (!data || data.length === 0) {
     return (
       <div className={styles.empty}>
-        <p>Sem dados disponíveis</p>
+        <p>No data available</p>
       </div>
     );
   }
