@@ -35,6 +35,8 @@ build/
 .idea/
 *.sqlite3
 *.db
+*.db-shm
+*.db-wal
 
 # AAS Specific
 data/aas_history.sqlite3

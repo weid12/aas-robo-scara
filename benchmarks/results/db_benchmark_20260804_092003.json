@@ -3,7 +3,15 @@
     "collected_at": "2026-08-04T13:12:46.621899+00:00",
     "db_path": "web/backend/robot_api/aas_robot_scara.db",
     "n_query_executions": 1000,
-    "api_url": "http://localhost:5000"
+    "api_url": "http://localhost:5000",
+    "network_interface": {
+      "interface_name": "Loopback Pseudo-Interface 1",
+      "interface_description": "Software Loopback Interface",
+      "ip_address": "127.0.0.1",
+      "link_type": "local_interprocess",
+      "target_endpoint": "http://localhost:5000 (FastAPI/Flask REST API)"
+    },
+    "paper_reference": "Table 6 (Historical query latency rows) and Section 4.4"
   },
   "acquisition_period": {
     "n_records": 10414,

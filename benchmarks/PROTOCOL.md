@@ -444,3 +444,28 @@ python benchmarks/comparative_benchmark.py --compare benchmarks/results/
 - **BaSyx** mostra o overhead de um servidor AAS completo (HTTP + serialização AAS)
 - **InfluxDB** mostra o trade-off de usar um TSDB dedicado vs SQLite embarcado
 - A diferença (cenário - baseline) isola o custo de cada camada adicionada
+
+---
+
+## 13. Rastreabilidade de Sessões e Desambiguação de Unidades
+
+Para mapeamento completo entre os números publicados no artigo, os arquivos de log brutos e as interfaces de rede utilizadas, consulte o manifesto formal:
+- [`BENCHMARK_SESSIONS_MANIFEST.md`](./results/BENCHMARK_SESSIONS_MANIFEST.md)
+- [`benchmark_sessions_manifest.json`](./results/benchmark_sessions_manifest.json)
+
+### 13.1 Interfaces de Rede Utilizadas
+* **Ensaios com o Robô Físico (Tabelas 5, 6, 7):** Interface `Ethernet` dedicada (`Killer E2600 Gigabit Ethernet Controller`, MAC `B4-45-06-C3-4F-D1`, IP `192.168.0.200/24`, velocidade negociada de `100 Mbps` com a porta industrial CS9 do Stäubli TS2-80).
+* **Acesso ao Dashboard e Supervisão:** Interface `Wi-Fi` (`Killer Wi-Fi 6 AX1650i`, IP `10.193.249.17`).
+* **Testes de Loopback e Servidores Simulados:** Interface `Loopback Pseudo-Interface 1` (`127.0.0.1`).
+
+### 13.2 Desambiguação de Unidades de Perda de Dados (Tabela 7)
+Para manter consistência dimensional nas métricas de injeção de falhas:
+1. **Taxa de Ingestão OPC UA:** 7,46 Hz (notificações brutas/segundo enviadas pelo servidor).
+2. **Slots de Escrita do Banco (Write Slots):** Agendados a cada 0,5 s (2,0 slots/s nominais).
+3. **Linhas Inseridas no SQLite por Slot:** 19 linhas na tabela `timeseries` (uma por métrica numérica monitorada).
+
+Durante uma falha de 30 s com ~20% de bloqueio:
+* Foram perdidos **32 a 33 slots de escrita** de um total de **60 slots esperados** (30 s / 0,5 s) $\rightarrow$ **53,9% de perda de slots**.
+* Na tabela `timeseries`, isso equivale a **608 a 627 linhas perdidas** de um total de **1.140 linhas esperadas** $\rightarrow$ **53,9% de perda de linhas**.
+* A taxa efetiva de inserção na tabela `timeseries` durante as sessões de falha foi de **18,30 linhas/s** (desconexão), **17,55 linhas/s** (intermitente) e **26,38 linhas/s** (restart).
+

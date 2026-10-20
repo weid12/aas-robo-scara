@@ -1,7 +1,19 @@
 {
   "metadata": {
     "snapshot_path": "C:\\Users\\weidson1.feitoza\\Documents\\Mestrado\\Teste\\aas-robo-scara - Copia\\acquisition\\client\\latest_data.json",
-    "fault_duration_s": 10.0
+    "fault_duration_s": 10.0,
+    "network_interface": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "status": "preliminary_calibration_trial"
   },
   "test_name": "gateway_restart",
   "test_description": "Kill/restart do cliente OPC UA (10.0s downtime) × 3 iterações",

@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "snapshot_path": "C:\\Users\\weidson1.feitoza\\Documents\\Mestrado\\Teste\\aas-robo-scara - Copia\\acquisition\\client\\latest_data.json",
+    "fault_duration_s": 10.0,
+    "stabilize_s": 10.0,
+    "network_interface": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "accounting_and_units": {
+      "paper_table_reference": "Table 7 (Column: Connection loss)",
+      "fault_type": "Connection loss (firewall block of OPC UA port 4880)",
+      "nominal_write_interval_s": 0.5,
+      "numeric_metrics_per_write_slot": 19,
+      "per_event_metrics": {
+        "expected_write_slots": 20,
+        "missed_write_slots": 20,
+        "write_slot_loss_pct": 100.0,
+        "expected_timeseries_rows": 380,
+        "missed_timeseries_rows": 380,
+        "timeseries_row_loss_pct": 100.0,
+        "expected_opcua_notifications_at_7_46hz": 75
+      },
+      "observed_session_rates": {
+        "session_duration_s": 123.52,
+        "total_flushes": 119,
+        "flush_frequency_hz": 0.96,
+        "timeseries_rows_inserted": 2261,
+        "timeseries_insert_rate_rows_per_s": 18.3,
+        "total_db_rows_inserted": 10591,
+        "total_db_insert_rate_rows_per_s": 85.74
+      }
+    }
+  },
+  "test_name": "disconnect_reconnect",
+  "test_description": "Desconexão OPC UA via firewall (10.0s) × 5 iterações",
+  "n_iterations": 5,
+  "fault_duration_s": 10.0,
+  "events": [
+    {
+      "test_name": "disconnect_reconnect",
+      "fault_injected_at": 1786480059.1534576,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480070.091799,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 10938.34137916565,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:27:38.510023+00:00",
+      "first_recovered_value": "2026-08-11T20:27:49.974085+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    },
+    {
+      "test_name": "disconnect_reconnect",
+      "fault_injected_at": 1786480085.0997722,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480096.2340405,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 11134.268283843994,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:28:04.555827+00:00",
+      "first_recovered_value": "2026-08-11T20:28:16.092099+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    },
+    {
+      "test_name": "disconnect_reconnect",
+      "fault_injected_at": 1786480111.245899,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480122.5646982,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 11318.799257278442,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:28:30.831843+00:00",
+      "first_recovered_value": "2026-08-11T20:28:42.427137+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    },
+    {
+      "test_name": "disconnect_reconnect",
+      "fault_injected_at": 1786480137.5721972,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480148.7197516,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 11147.554397583008,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:28:57.073126+00:00",
+      "first_recovered_value": "2026-08-11T20:29:08.598616+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    },
+    {
+      "test_name": "disconnect_reconnect",
+      "fault_injected_at": 1786480163.7310965,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480174.853756,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 11122.65944480896,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:29:23.245305+00:00",
+      "first_recovered_value": "2026-08-11T20:29:34.782369+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    }
+  ],
+  "detection_time_mean_ms": 0.0,
+  "detection_time_std_ms": 0.0,
+  "detection_time_p95_ms": 0.0,
+  "detection_time_max_ms": 0.0,
+  "recovery_time_mean_ms": 11132.32455253601,
+  "recovery_time_std_ms": 120.60798285233145,
+  "recovery_time_p95_ms": 11284.550285339355,
+  "recovery_time_max_ms": 11318.799257278442,
+  "total_samples_lost": 100,
+  "samples_lost_per_event_mean": 20.0,
+  "fallback_behaviors": {
+    "reconnected": 5
+  }
+}

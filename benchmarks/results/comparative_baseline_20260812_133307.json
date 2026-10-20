@@ -1,0 +1,47 @@
+{
+  "scenario_name": "baseline",
+  "scenario_description": "Cliente OPC UA direto (sem camada AAS, sem persistência)",
+  "duration_s": 120.5932514667511,
+  "start_time": "2026-08-12T17:31:07.009393+00:00",
+  "end_time": "2026-08-12T17:33:07.602645+00:00",
+  "acquisition_latency": {
+    "n_samples": 932,
+    "mean_ms": 8159.869010970317,
+    "std_ms": 77456.52053221241,
+    "median_ms": -363.88648748397827,
+    "p95_ms": 88.06041479110716,
+    "p99_ms": 716164.2648792267,
+    "min_ms": -378.21258306503296,
+    "max_ms": 717613.8104081154
+  },
+  "acquisition_rate_hz": 7.728459003006174,
+  "total_notifications": 932,
+  "resources": {
+    "cpu_mean_pct": 0.0,
+    "cpu_max_pct": 0.0,
+    "mem_rss_mean_mb": 0.0,
+    "mem_rss_max_mb": 0.0,
+    "mem_vms_mean_mb": 0.0
+  },
+  "storage_size_bytes": 0,
+  "storage_size_mb": 0.0,
+  "storage_records": 0,
+  "query_latencies": [],
+  "config": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "duration_s": 120.0,
+    "publishing_interval_ms": 200
+  },
+  "paper_reference": "Table 6 baseline exploratory run",
+  "network_interface": {
+    "interface_name": "Ethernet",
+    "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+    "ip_address": "192.168.0.200",
+    "subnet_mask": "255.255.255.0",
+    "mac_address": "B4-45-06-C3-4F-D1",
+    "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+    "link_type": "dedicated_industrial_ethernet_point_to_point",
+    "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+    "status": "Up"
+  }
+}

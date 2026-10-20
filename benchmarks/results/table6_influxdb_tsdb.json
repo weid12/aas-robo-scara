@@ -1,0 +1,88 @@
+{
+  "scenario_name": "influxdb_simulated",
+  "scenario_description": "OPC UA + escrita TSDB simulada (SQLite WAL, 1 INSERT/notificação)",
+  "duration_s": 120.19329714775085,
+  "start_time": "2026-08-12T17:41:48.442218+00:00",
+  "end_time": "2026-08-12T17:43:48.635515+00:00",
+  "acquisition_latency": {
+    "n_samples": 908,
+    "mean_ms": -266.644898700294,
+    "std_ms": 287.9459692846015,
+    "median_ms": -380.5372953414917,
+    "p95_ms": 471.1418151855469,
+    "p99_ms": 472.88575410842896,
+    "min_ms": -383.8869571685791,
+    "max_ms": 473.43525886535645
+  },
+  "acquisition_rate_hz": 7.646017055928621,
+  "total_notifications": 919,
+  "resources": {
+    "cpu_mean_pct": 0.0,
+    "cpu_max_pct": 0.0,
+    "mem_rss_mean_mb": 0.0,
+    "mem_rss_max_mb": 0.0,
+    "mem_vms_mean_mb": 0.0
+  },
+  "storage_size_bytes": 4096,
+  "storage_size_mb": 0.00390625,
+  "storage_records": 919,
+  "query_latencies": [
+    {
+      "query_name": "tsdb_last",
+      "n_executions": 100,
+      "mean_ms": 0.0125119999574963,
+      "std_ms": 0.013633747246956821,
+      "p95_ms": 0.0383100004910375,
+      "p99_ms": 0.06955600169021639,
+      "rows_returned": 1
+    },
+    {
+      "query_name": "tsdb_range_100",
+      "n_executions": 100,
+      "mean_ms": 0.1514300000417279,
+      "std_ms": 0.06393892458613104,
+      "p95_ms": 0.23210000163089708,
+      "p99_ms": 0.37187799927778653,
+      "rows_returned": 100
+    },
+    {
+      "query_name": "tsdb_range_1000",
+      "n_executions": 100,
+      "mean_ms": 1.6677500000514556,
+      "std_ms": 2.007394227203885,
+      "p95_ms": 2.16269000156899,
+      "p99_ms": 3.8653020030325007,
+      "rows_returned": 919
+    },
+    {
+      "query_name": "tsdb_count",
+      "n_executions": 100,
+      "mean_ms": 0.009202999972330872,
+      "std_ms": 0.015768636235103935,
+      "p95_ms": 0.00900500290299533,
+      "p99_ms": 0.016408000665251936,
+      "rows_returned": 1
+    }
+  ],
+  "config": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "duration_s": 120.0,
+    "publishing_interval_ms": 200,
+    "simulation": "SQLite WAL mode, 1 INSERT per notification (proxy InfluxDB)"
+  },
+  "paper_reference": "Table 6 (InfluxDB Database)",
+  "network_interface": {
+    "opcua_ingress": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "tsdb_persistence": "local_disk_wal"
+  }
+}

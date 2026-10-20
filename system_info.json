@@ -33,12 +33,27 @@
     },
     "interfaces": [
       {
+        "name": "Ethernet",
+        "description": "Killer E2600 Gigabit Ethernet Controller",
+        "role": "Primary industrial communication link with physical Stäubli TS2-80 robot controller (192.168.0.31:4880)",
+        "ip": "192.168.0.200",
+        "subnet_mask": "255.255.255.0",
+        "speed": "100 Mbps (negotiated with CS9 controller) / 1 Gbps max",
+        "mac": "B4-45-06-C3-4F-D1",
+        "status_when_connected_to_cell": "Up"
+      },
+      {
         "name": "Wi-Fi",
+        "description": "Killer(R) Wi-Fi 6 AX1650i 160MHz Wireless Network Adapter",
+        "role": "Plant WLAN / Gateway management and external access",
+        "ip": "10.193.249.17",
         "speed": "173.3 Mbps",
         "mac": "4E-CA-F7-0B-8D-62"
       },
       {
         "name": "vEthernet (Default Switch)",
+        "description": "Hyper-V Virtual Ethernet Adapter",
+        "role": "Internal virtualized networking",
         "speed": "10 Gbps",
         "mac": "00-15-5D-C9-14-46"
       }

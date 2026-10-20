@@ -1,0 +1,67 @@
+{
+  "scenario_name": "basyx_simulated",
+  "scenario_description": "OPC UA + overhead HTTP PUT simulado (loopback localhost)",
+  "duration_s": 120.62279105186462,
+  "start_time": "2026-08-12T17:39:45.649579+00:00",
+  "end_time": "2026-08-12T17:41:46.272370+00:00",
+  "acquisition_latency": {
+    "n_samples": 916,
+    "mean_ms": -282.487591177095,
+    "std_ms": 360.07285131843275,
+    "median_ms": -430.93498945236206,
+    "p95_ms": 636.2297296524048,
+    "p99_ms": 657.4703097343445,
+    "min_ms": -445.1299548149109,
+    "max_ms": 672.186529636383
+  },
+  "acquisition_rate_hz": 7.685114827109368,
+  "total_notifications": 927,
+  "resources": {
+    "cpu_mean_pct": 0.0,
+    "cpu_max_pct": 0.0,
+    "mem_rss_mean_mb": 0.0,
+    "mem_rss_max_mb": 0.0,
+    "mem_vms_mean_mb": 0.0
+  },
+  "storage_size_bytes": 92700,
+  "storage_size_mb": 0.08840560913085938,
+  "storage_records": 0,
+  "query_latencies": [
+    {
+      "query_name": "http_get_simulated",
+      "n_executions": 50,
+      "mean_ms": 8.985457999879145,
+      "std_ms": 7.765322028391485,
+      "p95_ms": 21.481359999052074,
+      "p99_ms": 26.247362000758574,
+      "rows_returned": 0
+    }
+  ],
+  "config": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "duration_s": 120.0,
+    "publishing_interval_ms": 200,
+    "simulation": "HTTP PUT to localhost:4999 per notification"
+  },
+  "paper_reference": "Table 6 (Eclipse BaSyx AAS Server)",
+  "network_interface": {
+    "opcua_ingress": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "basyx_egress": {
+      "interface_name": "Loopback Pseudo-Interface 1",
+      "interface_description": "Software Loopback Interface",
+      "ip_address": "127.0.0.1",
+      "link_type": "local_interprocess",
+      "target_endpoint": "http://localhost:5000 (FastAPI/Flask REST API)"
+    }
+  }
+}

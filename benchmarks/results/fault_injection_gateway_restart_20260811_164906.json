@@ -1,7 +1,42 @@
 {
   "metadata": {
     "snapshot_path": "C:\\Users\\weidson1.feitoza\\Documents\\Mestrado\\Teste\\aas-robo-scara - Copia\\acquisition\\client\\latest_data.json",
-    "fault_duration_s": 10.0
+    "fault_duration_s": 10.0,
+    "network_interface": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "accounting_and_units": {
+      "paper_table_reference": "Table 7 (Column: Gateway restart)",
+      "fault_type": "Gateway process restart (SIGKILL + cold start after 10s downtime)",
+      "nominal_write_interval_s": 0.5,
+      "numeric_metrics_per_write_slot": 19,
+      "per_event_metrics": {
+        "expected_write_slots": 20,
+        "missed_write_slots": 20,
+        "write_slot_loss_pct": 100.0,
+        "expected_timeseries_rows": 380,
+        "missed_timeseries_rows": 380,
+        "timeseries_row_loss_pct": 100.0,
+        "expected_opcua_notifications_at_7_46hz": 75
+      },
+      "observed_session_rates": {
+        "session_duration_s": 73.48,
+        "total_flushes": 99,
+        "flush_frequency_hz": 1.35,
+        "timeseries_rows_inserted": 1938,
+        "timeseries_insert_rate_rows_per_s": 26.38,
+        "total_db_rows_inserted": 9078,
+        "total_db_insert_rate_rows_per_s": 123.55
+      }
+    }
   },
   "test_name": "gateway_restart",
   "test_description": "Kill/restart do cliente OPC UA (10.0s downtime) × 3 iterações",

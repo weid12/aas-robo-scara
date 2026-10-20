@@ -179,6 +179,12 @@ Edite `acquisition/opcua_client/config_opcua.json` para ajustar:
 - Confirme que o backend está rodando em `localhost:5000`
 - O proxy Vite (`/api → localhost:5000`) requer que o dev server esteja ativo
 
+## 📊 Benchmarks e Reprodutibilidade Científica
+
+Os logs brutos dos ensaios experimentais reportados no artigo científico estão disponíveis no diretório `benchmarks/results/`. Para mapear cada tabela e figura aos dados originais, interfaces de rede e taxas de inserção observadas, consulte:
+- [BENCHMARK_SESSIONS_MANIFEST.md](./benchmarks/results/BENCHMARK_SESSIONS_MANIFEST.md) — Rastreabilidade completa de ensaios, logs e interfaces de rede
+- [PROTOCOL.md](./benchmarks/PROTOCOL.md) — Metodologia e protocolo de medição de latência e injeção de falhas
+
 ## 📚 Documentação Adicional
 
 - [SYSTEM_FLOW.md](./docs/SYSTEM_FLOW.md) — Fluxo do sistema e diagramas de sequência

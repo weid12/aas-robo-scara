@@ -2,7 +2,62 @@
   "metadata": {
     "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
     "loss_pct": 20,
-    "method": "intermittent_firewall"
+    "method": "intermittent_firewall",
+    "network_interface": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "accounting_and_units": {
+      "paper_table_reference": "Table 7 (Column: Intermittent connectivity)",
+      "fault_type": "Intermittent connectivity (~20% duty-cycle port block, 20ms block / 80ms open + jitter)",
+      "nominal_write_interval_s": 0.5,
+      "numeric_metrics_per_write_slot": 19,
+      "per_event_metrics": {
+        "expected_write_slots": 60,
+        "succeeded_write_slots_range": [
+          27,
+          28
+        ],
+        "missed_write_slots_range": [
+          32,
+          33
+        ],
+        "write_slot_loss_pct_range": [
+          53.33,
+          55.0
+        ],
+        "expected_timeseries_rows": 1140,
+        "succeeded_timeseries_rows_range": [
+          513,
+          532
+        ],
+        "missed_timeseries_rows_range": [
+          608,
+          627
+        ],
+        "timeseries_row_loss_pct_range": [
+          53.33,
+          55.0
+        ],
+        "expected_opcua_notifications_at_7_46hz": 224
+      },
+      "observed_session_rates": {
+        "session_duration_s": 128.86,
+        "total_flushes": 119,
+        "flush_frequency_hz": 0.92,
+        "timeseries_rows_inserted": 2261,
+        "timeseries_insert_rate_rows_per_s": 17.55,
+        "total_db_rows_inserted": 10591,
+        "total_db_insert_rate_rows_per_s": 82.19
+      }
+    }
   },
   "test_name": "packet_loss",
   "test_description": "Perda de pacotes simulada (~20%) por 30.0s × 3 iterações",

@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "snapshot_path": "C:\\Users\\weidson1.feitoza\\Documents\\Mestrado\\Teste\\aas-robo-scara - Copia\\acquisition\\client\\latest_data.json",
+    "fault_duration_s": 10.0,
+    "network_interface": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "accounting_and_units": {
+      "paper_table_reference": "Table 7 (Column: Gateway restart)",
+      "fault_type": "Gateway process restart (SIGKILL + cold start after 10s downtime)",
+      "nominal_write_interval_s": 0.5,
+      "numeric_metrics_per_write_slot": 19,
+      "per_event_metrics": {
+        "expected_write_slots": 20,
+        "missed_write_slots": 20,
+        "write_slot_loss_pct": 100.0,
+        "expected_timeseries_rows": 380,
+        "missed_timeseries_rows": 380,
+        "timeseries_row_loss_pct": 100.0,
+        "expected_opcua_notifications_at_7_46hz": 75
+      },
+      "observed_session_rates": {
+        "session_duration_s": 73.48,
+        "total_flushes": 99,
+        "flush_frequency_hz": 1.35,
+        "timeseries_rows_inserted": 1938,
+        "timeseries_insert_rate_rows_per_s": 26.38,
+        "total_db_rows_inserted": 9078,
+        "total_db_insert_rate_rows_per_s": 123.55
+      }
+    }
+  },
+  "test_name": "gateway_restart",
+  "test_description": "Kill/restart do cliente OPC UA (10.0s downtime) × 3 iterações",
+  "n_iterations": 3,
+  "fault_duration_s": 10.0,
+  "events": [
+    {
+      "test_name": "gateway_restart",
+      "fault_injected_at": 1786481292.8885298,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786481303.9016645,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 11013.134717941284,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:48:11.635298+00:00",
+      "first_recovered_value": "2026-08-11T20:48:23.688186+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    },
+    {
+      "test_name": "gateway_restart",
+      "fault_injected_at": 1786481314.5904677,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786481325.2916994,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 10701.231718063354,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:48:34.331054+00:00",
+      "first_recovered_value": "2026-08-11T20:48:45.124164+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    },
+    {
+      "test_name": "gateway_restart",
+      "fault_injected_at": 1786481335.9351952,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786481346.5045745,
+      "detection_time_ms": 0.0,
+      "recovery_time_ms": 10569.379329681396,
+      "samples_lost": 20,
+      "samples_before": 0,
+      "samples_after": 0,
+      "expected_samples_during": 20,
+      "last_valid_value": "2026-08-11T20:48:55.731172+00:00",
+      "first_recovered_value": "2026-08-11T20:49:06.471897+00:00",
+      "fallback_behavior": "reconnected",
+      "notes": ""
+    }
+  ],
+  "detection_time_mean_ms": 0.0,
+  "detection_time_std_ms": 0.0,
+  "detection_time_p95_ms": 0.0,
+  "detection_time_max_ms": 0.0,
+  "recovery_time_mean_ms": 10761.248588562012,
+  "recovery_time_std_ms": 186.06670794952433,
+  "recovery_time_p95_ms": 10981.944417953491,
+  "recovery_time_max_ms": 11013.134717941284,
+  "total_samples_lost": 60,
+  "samples_lost_per_event_mean": 20.0,
+  "fallback_behaviors": {
+    "reconnected": 3
+  }
+}

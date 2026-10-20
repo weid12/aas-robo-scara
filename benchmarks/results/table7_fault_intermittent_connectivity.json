@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "loss_pct": 20,
+    "method": "intermittent_firewall",
+    "network_interface": {
+      "interface_name": "Ethernet",
+      "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+      "link_type": "dedicated_industrial_ethernet_point_to_point",
+      "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "accounting_and_units": {
+      "paper_table_reference": "Table 7 (Column: Intermittent connectivity)",
+      "fault_type": "Intermittent connectivity (~20% duty-cycle port block, 20ms block / 80ms open + jitter)",
+      "nominal_write_interval_s": 0.5,
+      "numeric_metrics_per_write_slot": 19,
+      "per_event_metrics": {
+        "expected_write_slots": 60,
+        "succeeded_write_slots_range": [
+          27,
+          28
+        ],
+        "missed_write_slots_range": [
+          32,
+          33
+        ],
+        "write_slot_loss_pct_range": [
+          53.33,
+          55.0
+        ],
+        "expected_timeseries_rows": 1140,
+        "succeeded_timeseries_rows_range": [
+          513,
+          532
+        ],
+        "missed_timeseries_rows_range": [
+          608,
+          627
+        ],
+        "timeseries_row_loss_pct_range": [
+          53.33,
+          55.0
+        ],
+        "expected_opcua_notifications_at_7_46hz": 224
+      },
+      "observed_session_rates": {
+        "session_duration_s": 128.86,
+        "total_flushes": 119,
+        "flush_frequency_hz": 0.92,
+        "timeseries_rows_inserted": 2261,
+        "timeseries_insert_rate_rows_per_s": 17.55,
+        "total_db_rows_inserted": 10591,
+        "total_db_insert_rate_rows_per_s": 82.19
+      }
+    }
+  },
+  "test_name": "packet_loss",
+  "test_description": "Perda de pacotes simulada (~20%) por 30.0s × 3 iterações",
+  "n_iterations": 3,
+  "fault_duration_s": 30.0,
+  "events": [
+    {
+      "test_name": "packet_loss",
+      "fault_injected_at": 1786480332.3787775,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480363.038453,
+      "detection_time_ms": 20.000000000000004,
+      "recovery_time_ms": 30659.67559814453,
+      "samples_lost": 32,
+      "samples_before": 28,
+      "samples_after": 0,
+      "expected_samples_during": 60,
+      "last_valid_value": "2026-08-11T20:32:11.425284+00:00",
+      "first_recovered_value": "2026-08-11T20:32:43.017775+00:00",
+      "fallback_behavior": "partial_loss_then_recovered",
+      "notes": ""
+    },
+    {
+      "test_name": "packet_loss",
+      "fault_injected_at": 1786480373.0442905,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480404.6673582,
+      "detection_time_ms": 20.000000000000004,
+      "recovery_time_ms": 31623.067617416382,
+      "samples_lost": 32,
+      "samples_before": 28,
+      "samples_after": 0,
+      "expected_samples_during": 60,
+      "last_valid_value": "2026-08-11T20:32:52.687609+00:00",
+      "first_recovered_value": "2026-08-11T20:33:24.637836+00:00",
+      "fallback_behavior": "partial_loss_then_recovered",
+      "notes": ""
+    },
+    {
+      "test_name": "packet_loss",
+      "fault_injected_at": 1786480414.6736884,
+      "fault_detected_at": 0.0,
+      "recovery_at": 1786480446.4633741,
+      "detection_time_ms": 20.000000000000004,
+      "recovery_time_ms": 31789.68572616577,
+      "samples_lost": 33,
+      "samples_before": 27,
+      "samples_after": 0,
+      "expected_samples_during": 60,
+      "last_valid_value": "2026-08-11T20:33:34.291614+00:00",
+      "first_recovered_value": "2026-08-11T20:34:06.407343+00:00",
+      "fallback_behavior": "partial_loss_then_recovered",
+      "notes": ""
+    }
+  ],
+  "detection_time_mean_ms": 20.000000000000004,
+  "detection_time_std_ms": 0.0,
+  "detection_time_p95_ms": 20.000000000000004,
+  "detection_time_max_ms": 20.000000000000004,
+  "recovery_time_mean_ms": 31357.476313908894,
+  "recovery_time_std_ms": 498.0861891491937,
+  "recovery_time_p95_ms": 31773.023915290833,
+  "recovery_time_max_ms": 31789.68572616577,
+  "total_samples_lost": 97,
+  "samples_lost_per_event_mean": 32.333333333333336,
+  "fallback_behaviors": {
+    "partial_loss_then_recovered": 3
+  }
+}

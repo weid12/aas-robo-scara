@@ -11,10 +11,22 @@
     "BuildDate": "ns=0;i=2266"
   },
   "TechnicalData": {
-    "Range": { "manual": "800 mm", "policy": "manual-only" },
-    "Payload": { "manual": "8 kg", "policy": "manual-only" },
-    "Repeatability": { "manual": "±0.02 mm", "policy": "manual-only" },
-    "Weight": { "manual": "42 kg", "policy": "manual-only" },
+    "Range": {
+      "manual": "800 mm",
+      "policy": "manual-only"
+    },
+    "Payload": {
+      "manual": "8 kg",
+      "policy": "manual-only"
+    },
+    "Repeatability": {
+      "manual": "±0.02 mm",
+      "policy": "manual-only"
+    },
+    "Weight": {
+      "manual": "42 kg",
+      "policy": "manual-only"
+    },
     "PayloadUser": "ns=1;s=Robot:Controller:System:PayloadUser:Mass"
   },
   "OperationalData": {
@@ -59,7 +71,6 @@
     "enabled": true,
     "mode": "subscription",
     "publishing_interval_ms": 200,
-    "write_interval_s": 0.5,
-    "interval_seconds": 0.01
+    "write_interval_s": 0.5
   }
 }

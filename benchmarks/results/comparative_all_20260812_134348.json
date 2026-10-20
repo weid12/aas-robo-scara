@@ -1,0 +1,156 @@
+[
+  {
+    "scenario_name": "baseline",
+    "scenario_description": "Cliente OPC UA direto (sem camada AAS, sem persistência)",
+    "duration_s": 120.9948992729187,
+    "start_time": "2026-08-12T17:37:43.382428+00:00",
+    "end_time": "2026-08-12T17:39:44.377327+00:00",
+    "acquisition_latency": {
+      "n_samples": 922,
+      "mean_ms": 12950.386064869721,
+      "std_ms": 120903.32328618265,
+      "median_ms": -447.60552644729614,
+      "p95_ms": 404.9014449119568,
+      "p99_ms": 1112480.408987999,
+      "min_ms": -461.27036809921265,
+      "max_ms": 1113929.9428105354
+    },
+    "acquisition_rate_hz": 7.620155936659089,
+    "total_notifications": 922,
+    "resources": {
+      "cpu_mean_pct": 0.0,
+      "cpu_max_pct": 0.0,
+      "mem_rss_mean_mb": 0.0,
+      "mem_rss_max_mb": 0.0,
+      "mem_vms_mean_mb": 0.0
+    },
+    "storage_size_bytes": 0,
+    "storage_size_mb": 0.0,
+    "storage_records": 0,
+    "query_latencies": [],
+    "config": {
+      "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+      "duration_s": 120.0,
+      "publishing_interval_ms": 200
+    }
+  },
+  {
+    "scenario_name": "basyx_simulated",
+    "scenario_description": "OPC UA + overhead HTTP PUT simulado (loopback localhost)",
+    "duration_s": 120.62279105186462,
+    "start_time": "2026-08-12T17:39:45.649579+00:00",
+    "end_time": "2026-08-12T17:41:46.272370+00:00",
+    "acquisition_latency": {
+      "n_samples": 916,
+      "mean_ms": -282.487591177095,
+      "std_ms": 360.07285131843275,
+      "median_ms": -430.93498945236206,
+      "p95_ms": 636.2297296524048,
+      "p99_ms": 657.4703097343445,
+      "min_ms": -445.1299548149109,
+      "max_ms": 672.186529636383
+    },
+    "acquisition_rate_hz": 7.685114827109368,
+    "total_notifications": 927,
+    "resources": {
+      "cpu_mean_pct": 0.0,
+      "cpu_max_pct": 0.0,
+      "mem_rss_mean_mb": 0.0,
+      "mem_rss_max_mb": 0.0,
+      "mem_vms_mean_mb": 0.0
+    },
+    "storage_size_bytes": 92700,
+    "storage_size_mb": 0.08840560913085938,
+    "storage_records": 0,
+    "query_latencies": [
+      {
+        "query_name": "http_get_simulated",
+        "n_executions": 50,
+        "mean_ms": 8.985457999879145,
+        "std_ms": 7.765322028391485,
+        "p95_ms": 21.481359999052074,
+        "p99_ms": 26.247362000758574,
+        "rows_returned": 0
+      }
+    ],
+    "config": {
+      "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+      "duration_s": 120.0,
+      "publishing_interval_ms": 200,
+      "simulation": "HTTP PUT to localhost:4999 per notification"
+    }
+  },
+  {
+    "scenario_name": "influxdb_simulated",
+    "scenario_description": "OPC UA + escrita TSDB simulada (SQLite WAL, 1 INSERT/notificação)",
+    "duration_s": 120.19329714775085,
+    "start_time": "2026-08-12T17:41:48.442218+00:00",
+    "end_time": "2026-08-12T17:43:48.635515+00:00",
+    "acquisition_latency": {
+      "n_samples": 908,
+      "mean_ms": -266.644898700294,
+      "std_ms": 287.9459692846015,
+      "median_ms": -380.5372953414917,
+      "p95_ms": 471.1418151855469,
+      "p99_ms": 472.88575410842896,
+      "min_ms": -383.8869571685791,
+      "max_ms": 473.43525886535645
+    },
+    "acquisition_rate_hz": 7.646017055928621,
+    "total_notifications": 919,
+    "resources": {
+      "cpu_mean_pct": 0.0,
+      "cpu_max_pct": 0.0,
+      "mem_rss_mean_mb": 0.0,
+      "mem_rss_max_mb": 0.0,
+      "mem_vms_mean_mb": 0.0
+    },
+    "storage_size_bytes": 4096,
+    "storage_size_mb": 0.00390625,
+    "storage_records": 919,
+    "query_latencies": [
+      {
+        "query_name": "tsdb_last",
+        "n_executions": 100,
+        "mean_ms": 0.0125119999574963,
+        "std_ms": 0.013633747246956821,
+        "p95_ms": 0.0383100004910375,
+        "p99_ms": 0.06955600169021639,
+        "rows_returned": 1
+      },
+      {
+        "query_name": "tsdb_range_100",
+        "n_executions": 100,
+        "mean_ms": 0.1514300000417279,
+        "std_ms": 0.06393892458613104,
+        "p95_ms": 0.23210000163089708,
+        "p99_ms": 0.37187799927778653,
+        "rows_returned": 100
+      },
+      {
+        "query_name": "tsdb_range_1000",
+        "n_executions": 100,
+        "mean_ms": 1.6677500000514556,
+        "std_ms": 2.007394227203885,
+        "p95_ms": 2.16269000156899,
+        "p99_ms": 3.8653020030325007,
+        "rows_returned": 919
+      },
+      {
+        "query_name": "tsdb_count",
+        "n_executions": 100,
+        "mean_ms": 0.009202999972330872,
+        "std_ms": 0.015768636235103935,
+        "p95_ms": 0.00900500290299533,
+        "p99_ms": 0.016408000665251936,
+        "rows_returned": 1
+      }
+    ],
+    "config": {
+      "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+      "duration_s": 120.0,
+      "publishing_interval_ms": 200,
+      "simulation": "SQLite WAL mode, 1 INSERT per notification (proxy InfluxDB)"
+    }
+  }
+]

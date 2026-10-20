@@ -1,0 +1,43 @@
+{
+  "start_time": "2026-08-12T17:56:17.172775+00:00",
+  "end_time": "2026-08-12T17:57:18.170845+00:00",
+  "duration_seconds": 60.998069524765015,
+  "config": {
+    "server_url": "opc.tcp://192.168.0.31:4880/Staubli",
+    "duration_seconds": 60,
+    "publishing_interval_ms": 200,
+    "clock_sync_method": "NTP",
+    "clock_offset_ms": 0.0,
+    "nodes_monitored": 0,
+    "output_dir": "benchmarks/results/"
+  },
+  "clock_offset_ms": 14440861.082553864,
+  "clock_offset_method": "NTP half-RTT (30 amostras, filtragem RTT, mediana)",
+  "clock_offset_samples": 30,
+  "clock_offset_std_ms": 282.1455528678316,
+  "n_samples": 479,
+  "latency_mean_ms": -176.88968634555633,
+  "latency_std_ms": 160.27791848019453,
+  "latency_median_ms": -221.45414352416992,
+  "latency_p95_ms": 230.16092777252197,
+  "latency_p99_ms": 231.17738723754883,
+  "latency_min_ms": -422.7008819580078,
+  "latency_max_ms": 231.80484771728516,
+  "acquisition_rate_hz": 7.852707532088824,
+  "notifications_total": 490,
+  "notifications_per_node_avg": 14.515151515151516,
+  "load_description": "33 nós monitorados | publishing_interval=200ms | duração=61.0s | sincronização=NTP | outliers descartados=11 | ciclos do robô (J3)=34",
+  "nodes_monitored": 33,
+  "publishing_interval_ms": 200,
+  "network_interface": {
+    "interface_name": "Ethernet",
+    "interface_description": "Killer E2600 Gigabit Ethernet Controller",
+    "ip_address": "192.168.0.200",
+    "subnet_mask": "255.255.255.0",
+    "mac_address": "B4-45-06-C3-4F-D1",
+    "negotiated_speed": "100 Mbps (negotiated with CS9 controller 100BASE-TX port)",
+    "link_type": "dedicated_industrial_ethernet_point_to_point",
+    "target_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+    "status": "Up"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "project": "AAS Robô SCARA",
+  "manuscript_title": "An Asset Administration Shell Architecture with Dual Data Persistence for the Monitoring of an Industrial SCARA Robot",
+  "network_interfaces": {
+    "physical_robot_cell": {
+      "interface_name": "Ethernet",
+      "adapter": "Killer E2600 Gigabit Ethernet Controller",
+      "ip_address": "192.168.0.200",
+      "subnet_mask": "255.255.255.0",
+      "mac_address": "B4-45-06-C3-4F-D1",
+      "negotiated_speed": "100 Mbps (negotiated with Stäubli CS9 controller 100BASE-TX port)",
+      "media": "Cat6 UTP copper cable, dedicated industrial link",
+      "target_server_endpoint": "opc.tcp://192.168.0.31:4880/Staubli",
+      "status": "Up"
+    },
+    "plant_wlan": {
+      "interface_name": "Wi-Fi",
+      "adapter": "Killer(R) Wi-Fi 6 AX1650i 160MHz Wireless Network Adapter",
+      "ip_address": "10.193.249.17",
+      "mac_address": "4E-CA-F7-0B-8D-62",
+      "speed": "173.3 Mbps",
+      "role": "Plant supervisory dashboard access and management"
+    },
+    "interprocess_loopback": {
+      "interface_name": "Loopback Pseudo-Interface 1",
+      "ip_address": "127.0.0.1",
+      "role": "Intra-gateway REST API and local simulated server benchmarks"
+    }
+  },
+  "manuscript_table_mappings": {
+    "Table_5": {
+      "description": "1-hour continuous pick-and-place telemetry campaign",
+      "raw_log_file": "latency_benchmark_20260812_151547.json",
+      "text_report_file": "latency_benchmark_20260812_151547.txt",
+      "network_interface": "Ethernet (192.168.0.200)"
+    },
+    "Table_6": {
+      "Proposed_Stack": {
+        "raw_log_file": "latency_benchmark_20260812_151547.json",
+        "network_interface": "Ethernet (192.168.0.200)"
+      },
+      "Direct_OPC_UA_Baseline": {
+        "raw_log_file": "comparative_baseline_20260812_170007.json",
+        "network_interface": "Ethernet (192.168.0.200)"
+      },
+      "Eclipse_BaSyx": {
+        "raw_log_file": "comparative_basyx_simulated_20260812_134147.json",
+        "network_interface": "Ethernet (OPC UA) + Loopback (HTTP :4001)"
+      },
+      "InfluxDB_TSDB": {
+        "raw_log_file": "comparative_influxdb_simulated_20260812_134348.json",
+        "network_interface": "Ethernet (OPC UA) + Local Storage"
+      },
+      "Historical_Queries_SQLite": {
+        "raw_log_file": "db_benchmark_20260804_092003.json",
+        "network_interface": "Loopback (127.0.0.1:5000)"
+      }
+    },
+    "Table_7": {
+      "Connection_Loss": {
+        "raw_log_file": "fault_injection_disconnect_reconnect_20260811_162935.json",
+        "text_report_file": "fault_injection_disconnect_reconnect_20260811_162935.txt",
+        "network_interface": "Ethernet (192.168.0.200)",
+        "trials_n": 5,
+        "fault_duration_s": 10.0,
+        "expected_write_slots": 20,
+        "missed_write_slots": 20,
+        "write_slot_loss_pct": 100.0,
+        "expected_timeseries_rows": 380,
+        "missed_timeseries_rows": 380,
+        "timeseries_row_loss_pct": 100.0,
+        "observed_insert_rate_rows_per_s": 18.3
+      },
+      "Intermittent_Connectivity": {
+        "raw_log_file": "fault_injection_packet_loss_20260811_163406.json",
+        "text_report_file": "fault_injection_packet_loss_20260811_163406.txt",
+        "network_interface": "Ethernet (192.168.0.200)",
+        "trials_n": 3,
+        "fault_duration_s": 30.0,
+        "expected_write_slots": 60,
+        "missed_write_slots_range": [
+          32,
+          33
+        ],
+        "write_slot_loss_pct_range": [
+          53.33,
+          55.0
+        ],
+        "expected_timeseries_rows": 1140,
+        "missed_timeseries_rows_range": [
+          608,
+          627
+        ],
+        "timeseries_row_loss_pct_range": [
+          53.33,
+          55.0
+        ],
+        "observed_insert_rate_rows_per_s": 17.55
+      },
+      "Gateway_Restart": {
+        "raw_log_file": "fault_injection_gateway_restart_20260811_164906.json",
+        "text_report_file": "fault_injection_gateway_restart_20260811_164906.txt",
+        "network_interface": "Ethernet (192.168.0.200)",
+        "trials_n": 3,
+        "fault_duration_s": 10.0,
+        "expected_write_slots": 20,
+        "missed_write_slots": 20,
+        "write_slot_loss_pct": 100.0,
+        "expected_timeseries_rows": 380,
+        "missed_timeseries_rows": 380,
+        "timeseries_row_loss_pct": 100.0,
+        "observed_insert_rate_rows_per_s": 26.38
+      }
+    }
+  }
+}

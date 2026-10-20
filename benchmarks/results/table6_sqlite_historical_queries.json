@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "collected_at": "2026-08-04T13:12:46.621899+00:00",
+    "db_path": "web/backend/robot_api/aas_robot_scara.db",
+    "n_query_executions": 1000,
+    "api_url": "http://localhost:5000",
+    "network_interface": {
+      "interface_name": "Loopback Pseudo-Interface 1",
+      "interface_description": "Software Loopback Interface",
+      "ip_address": "127.0.0.1",
+      "link_type": "local_interprocess",
+      "target_endpoint": "http://localhost:5000 (FastAPI/Flask REST API)"
+    },
+    "paper_reference": "Table 6 (Historical query latency rows) and Section 4.4"
+  },
+  "acquisition_period": {
+    "n_records": 10414,
+    "n_intervals": 10413,
+    "interval_mean_s": 1211.079031155568,
+    "interval_std_s": 114292.30221863763,
+    "interval_median_s": 0.6817758083343506,
+    "interval_min_s": 0.00010991096496582031,
+    "interval_max_s": 11640442.669040918,
+    "interval_p95_s": 1.6842932224273681,
+    "interval_p99_s": 11.637583999633687,
+    "first_record": "2026-03-10T19:31:34.305342+00:00",
+    "last_record": "2026-08-03T18:34:20.256765+00:00",
+    "total_duration_s": 12610965.95142293
+  },
+  "insertion_rate": {
+    "total_records": 10422,
+    "total_duration_s": 12610965.95142293,
+    "rate_records_per_s": 0.0008264236094320798,
+    "rate_snapshots_per_s": 0.0,
+    "tables": {
+      "robot_state": 10422
+    }
+  },
+  "database_size": {
+    "path": "web/backend/robot_api/aas_robot_scara.db",
+    "size_bytes": 1155072,
+    "size_kb": 1128.0,
+    "size_mb": 1.1015625,
+    "page_size": 4096,
+    "page_count": 282,
+    "freelist_count": 0,
+    "tables": {
+      "robot_state": 10422,
+      "opcua_connections": 8
+    }
+  },
+  "query_latencies": [
+    {
+      "query_name": "latest_robot_state",
+      "query_description": "Último estado do robô (robot_state ORDER BY timestamp DESC)",
+      "n_executions": 1000,
+      "latency_mean_ms": 4.546714099873498,
+      "latency_std_ms": 0.5718972969095187,
+      "latency_median_ms": 4.410999998071929,
+      "latency_min_ms": 3.9627000005566515,
+      "latency_max_ms": 11.017499993613455,
+      "latency_p95_ms": 5.266090004806756,
+      "latency_p99_ms": 7.645826001680689,
+      "rows_returned": 1
+    },
+    {
+      "query_name": "history_robot_50",
+      "query_description": "Últimos 50 estados do robô",
+      "n_executions": 1000,
+      "latency_mean_ms": 7.139329199992062,
+      "latency_std_ms": 0.35511591407561527,
+      "latency_median_ms": 7.091750005201902,
+      "latency_min_ms": 6.464800004323479,
+      "latency_max_ms": 9.256400000595022,
+      "latency_p95_ms": 7.714405000660918,
+      "latency_p99_ms": 8.655612993679824,
+      "rows_returned": 50
+    },
+    {
+      "query_name": "history_robot_500",
+      "query_description": "Últimos 500 estados do robô",
+      "n_executions": 1000,
+      "latency_mean_ms": 13.140766400058055,
+      "latency_std_ms": 0.5395078092403435,
+      "latency_median_ms": 13.10525000008056,
+      "latency_min_ms": 11.976900001172908,
+      "latency_max_ms": 16.85390000056941,
+      "latency_p95_ms": 14.010119995145942,
+      "latency_p99_ms": 14.78365200331609,
+      "rows_returned": 500
+    },
+    {
+      "query_name": "count_all",
+      "query_description": "Contagem total de registros em todas as tabelas",
+      "n_executions": 1000,
+      "latency_mean_ms": 0.01054409999778727,
+      "latency_std_ms": 0.02102015438498858,
+      "latency_median_ms": 0.0092999980552122,
+      "latency_min_ms": 0.008899995009414852,
+      "latency_max_ms": 0.6665000037173741,
+      "latency_p95_ms": 0.011715001892298446,
+      "latency_p99_ms": 0.024805999637464986,
+      "rows_returned": 1
+    },
+    {
+      "query_name": "api_latest",
+      "query_description": "GET /api/robot/state/latest",
+      "n_executions": 50,
+      "latency_mean_ms": 2067.381622000248,
+      "latency_std_ms": 13.595328611528716,
+      "latency_median_ms": 2066.730449998431,
+      "latency_min_ms": 2032.172700004594,
+      "latency_max_ms": 2087.941599995247,
+      "latency_p95_ms": 2084.5357250036614,
+      "latency_p99_ms": 2087.8181199962273,
+      "rows_returned": 1
+    },
+    {
+      "query_name": "api_history_50",
+      "query_description": "GET /api/robot/state/history?limit=50",
+      "n_executions": 50,
+      "latency_mean_ms": 2066.754558000539,
+      "latency_std_ms": 15.389442590853818,
+      "latency_median_ms": 2066.4989500000956,
+      "latency_min_ms": 2030.675699999847,
+      "latency_max_ms": 2098.070699998061,
+      "latency_p95_ms": 2090.181325002777,
+      "latency_p99_ms": 2097.3894039977313,
+      "rows_returned": 50
+    },
+    {
+      "query_name": "api_summary",
+      "query_description": "GET /api/robot/metrics/summary",
+      "n_executions": 50,
+      "latency_mean_ms": 2049.1156759996375,
+      "latency_std_ms": 12.293810654919374,
+      "latency_median_ms": 2050.375200000417,
+      "latency_min_ms": 2023.7269999997807,
+      "latency_max_ms": 2070.3998999961186,
+      "latency_p95_ms": 2066.7673450014263,
+      "latency_p99_ms": 2069.8650649986666,
+      "rows_returned": 1
+    },
+    {
+      "query_name": "api_health",
+      "query_description": "GET /api/robot/health",
+      "n_executions": 50,
+      "latency_mean_ms": 2052.011776000145,
+      "latency_std_ms": 13.673823333573665,
+      "latency_median_ms": 2051.758350004093,
+      "latency_min_ms": 2030.9886000031838,
+      "latency_max_ms": 2089.5021999967867,
+      "latency_p95_ms": 2071.4514299990697,
+      "latency_p99_ms": 2086.274667999387,
+      "rows_returned": 1
+    }
+  ]
+}

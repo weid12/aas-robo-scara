@@ -260,16 +260,21 @@ class LatencyHandler:
         t_receive = t_receive_perf + self._perf_epoch_offset
 
         try:
-            # Extrai SourceTimestamp do DataValue
+            # Extrai ServerTimestamp do DataValue (mais confiável que SourceTimestamp
+            # quando o relógio do controlador não está sincronizado via NTP).
+            # ServerTimestamp = instante em que o stack OPC UA do servidor empacotou o dado.
             source_ts = None
             if hasattr(data, 'monitored_item') and hasattr(data.monitored_item, 'Value'):
                 dv = data.monitored_item.Value
-                if hasattr(dv, 'SourceTimestamp') and dv.SourceTimestamp is not None:
+                # Prioriza ServerTimestamp (gerado pelo stack OPC UA, mesmo relógio)
+                if hasattr(dv, 'ServerTimestamp') and dv.ServerTimestamp is not None:
+                    source_ts = dv.ServerTimestamp.timestamp()
+                elif hasattr(dv, 'SourceTimestamp') and dv.SourceTimestamp is not None:
                     source_ts = dv.SourceTimestamp.timestamp()
             
             if source_ts is None:
-                if hasattr(data, 'Value') and hasattr(data.Value, 'SourceTimestamp'):
-                    st = data.Value.SourceTimestamp
+                if hasattr(data, 'Value') and hasattr(data.Value, 'ServerTimestamp'):
+                    st = data.Value.ServerTimestamp
                     if st is not None:
                         source_ts = st.timestamp()
 

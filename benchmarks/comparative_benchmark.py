@@ -948,6 +948,375 @@ def load_and_compare(results_dir: str) -> None:
 
 # ─── Main ─────────────────────────────────────────────────────────────────────────
 
+# ══════════════════════════════════════════════════════════════════════════════════
+# CENÁRIO (ii) SIMULADO: OVERHEAD DE SERVIDOR AAS (HTTP + JSON serialization)
+# ══════════════════════════════════════════════════════════════════════════════════
+#
+# Simula o overhead de publicar cada notificação em um servidor AAS via HTTP PUT.
+# Usa um servidor HTTP local em thread para medir o custo real de:
+# - Serialização JSON do valor
+# - Requisição HTTP PUT (loopback)
+# - Parsing e armazenamento no servidor
+# ══════════════════════════════════════════════════════════════════════════════════
+
+async def run_basyx_simulated_scenario(
+    server_url: str,
+    duration_s: float,
+    publishing_interval_ms: float = 200,
+) -> ScenarioResult:
+    """Cenário BaSyx simulado: mede overhead de HTTP+JSON por notificação."""
+    from asyncua import Client
+    import http.server
+    import threading
+    import json as _json
+    import urllib.request
+
+    result = ScenarioResult(
+        scenario_name="basyx_simulated",
+        scenario_description="OPC UA + overhead HTTP PUT simulado (loopback localhost)",
+    )
+    result.config = {
+        "server_url": server_url,
+        "duration_s": duration_s,
+        "publishing_interval_ms": publishing_interval_ms,
+        "simulation": "HTTP PUT to localhost:4999 per notification",
+    }
+
+    # Mini HTTP server para receber PUTs
+    class SimplePutHandler(http.server.BaseHTTPRequestHandler):
+        def do_PUT(self):
+            length = int(self.headers.get('Content-Length', 0))
+            self.rfile.read(length)
+            self.send_response(204)
+            self.end_headers()
+        def log_message(self, format, *args):
+            pass  # silencia logs
+
+    httpd = http.server.HTTPServer(('127.0.0.1', 4999), SimplePutHandler)
+    http_thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    http_thread.start()
+
+    client = Client(url=server_url, timeout=10)
+    await client.connect()
+    logger.info("[basyx-sim] Conectado ao OPC UA + HTTP server local na porta 4999")
+
+    try:
+        clock_offset = await _measure_clock_offset(client)
+        if CONFIG_FILE.exists():
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                config = json.load(f)
+            nodeids = _extract_nodeids(config)
+        else:
+            nodeids = ["ns=0;i=2258"]
+
+        res_monitor = ResourceMonitor()
+        res_monitor.start()
+
+        latencies: List[float] = []
+        write_latencies: List[float] = []
+        notifications = 0
+
+        class BaSyxSimHandler:
+            def __init__(self):
+                self._active = True
+                self._perf_offset = time.time() - time.perf_counter()
+
+            def datachange_notification(self, node, val, data):
+                nonlocal notifications
+                if not self._active:
+                    return
+                t_receive = time.perf_counter() + self._perf_offset
+                try:
+                    source_ts = None
+                    if hasattr(data, 'monitored_item') and hasattr(data.monitored_item, 'Value'):
+                        dv = data.monitored_item.Value
+                        if hasattr(dv, 'SourceTimestamp') and dv.SourceTimestamp:
+                            source_ts = dv.SourceTimestamp.timestamp()
+                    if source_ts is None:
+                        return
+
+                    latency_ms = (t_receive - source_ts) * 1000 - clock_offset
+                    if abs(latency_ms) < 10000:
+                        latencies.append(latency_ms)
+                    notifications += 1
+
+                    # Simula PUT HTTP ao servidor AAS
+                    t_w0 = time.perf_counter()
+                    payload = _json.dumps({"value": str(val), "node": node.nodeid.to_string()}).encode()
+                    req = urllib.request.Request(
+                        "http://127.0.0.1:4999/submodel/value",
+                        data=payload, method='PUT',
+                        headers={'Content-Type': 'application/json'}
+                    )
+                    try:
+                        urllib.request.urlopen(req, timeout=1)
+                    except Exception:
+                        pass
+                    t_w1 = time.perf_counter()
+                    write_latencies.append((t_w1 - t_w0) * 1000)
+                except Exception:
+                    pass
+
+            def status_change_notification(self, status):
+                pass
+
+        handler = BaSyxSimHandler()
+        subscription = await client.create_subscription(
+            period=publishing_interval_ms, handler=handler
+        )
+        nodes = [client.get_node(nid) for nid in nodeids]
+        await subscription.subscribe_data_change(nodes)
+
+        result.start_time = datetime.now(timezone.utc).isoformat()
+        start = time.time()
+        while (time.time() - start) < duration_s:
+            await asyncio.sleep(1.0)
+            res_monitor.sample()
+
+        handler._active = False
+        result.end_time = datetime.now(timezone.utc).isoformat()
+        result.duration_s = time.time() - start
+        result.resources = res_monitor.stop()
+        result.acquisition_latency = _compute_latency_stats(latencies)
+        result.total_notifications = notifications
+        result.acquisition_rate_hz = notifications / result.duration_s if result.duration_s > 0 else 0
+
+        # Query latencies (simula GET ao servidor AAS)
+        q_latencies = []
+        for _ in range(50):
+            t0 = time.perf_counter()
+            try:
+                urllib.request.urlopen("http://127.0.0.1:4999/submodel/value", timeout=1)
+            except Exception:
+                pass
+            t1 = time.perf_counter()
+            q_latencies.append((t1 - t0) * 1000)
+        if q_latencies:
+            arr = np.array(q_latencies)
+            result.query_latencies = [QueryLatency(
+                query_name="http_get_simulated", n_executions=len(q_latencies),
+                mean_ms=float(np.mean(arr)), std_ms=float(np.std(arr)),
+                p95_ms=float(np.percentile(arr, 95)), p99_ms=float(np.percentile(arr, 99)),
+            )]
+
+        # Write overhead
+        if write_latencies:
+            arr_w = np.array(write_latencies)
+            result.storage_size_bytes = int(notifications * 100)  # ~100 bytes per PUT
+            result.storage_size_mb = result.storage_size_bytes / (1024*1024)
+            logger.info("[basyx-sim] HTTP PUT overhead: %.2f ± %.2f ms",
+                        float(np.mean(arr_w)), float(np.std(arr_w)))
+
+        try:
+            await subscription.delete()
+        except Exception:
+            pass
+
+    finally:
+        await client.disconnect()
+        httpd.shutdown()
+
+    logger.info("[basyx-sim] Concluído: %d notificações", result.total_notifications)
+    return result
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# CENÁRIO (iii) SIMULADO: OVERHEAD DE TSDB (SQLite WAL como proxy de InfluxDB)
+# ══════════════════════════════════════════════════════════════════════════════════
+#
+# Simula o overhead de escrever cada notificação em um banco de séries temporais.
+# Usa SQLite em modo WAL (Write-Ahead Logging) — comportamento similar ao InfluxDB
+# para escritas de pontos individuais. Mede:
+# - Tempo de INSERT por ponto
+# - Tamanho do banco resultante
+# - Latência de consulta range
+# ══════════════════════════════════════════════════════════════════════════════════
+
+async def run_influxdb_simulated_scenario(
+    server_url: str,
+    duration_s: float,
+    publishing_interval_ms: float = 200,
+) -> ScenarioResult:
+    """Cenário InfluxDB simulado: mede overhead de escrita em TSDB (via SQLite WAL)."""
+    from asyncua import Client
+    import sqlite3
+    import tempfile
+
+    result = ScenarioResult(
+        scenario_name="influxdb_simulated",
+        scenario_description="OPC UA + escrita TSDB simulada (SQLite WAL, 1 INSERT/notificação)",
+    )
+    result.config = {
+        "server_url": server_url,
+        "duration_s": duration_s,
+        "publishing_interval_ms": publishing_interval_ms,
+        "simulation": "SQLite WAL mode, 1 INSERT per notification (proxy InfluxDB)",
+    }
+
+    # Cria banco temporário
+    tmp_db = tempfile.mktemp(suffix=".sqlite3", prefix="tsdb_bench_")
+    con = sqlite3.connect(tmp_db, check_same_thread=False)
+    con.execute("PRAGMA journal_mode=WAL")
+    con.execute("PRAGMA synchronous=NORMAL")
+    con.execute("""
+        CREATE TABLE measurements (
+            id INTEGER PRIMARY KEY,
+            ts TEXT NOT NULL,
+            node_id TEXT NOT NULL,
+            value REAL
+        )
+    """)
+    con.execute("CREATE INDEX idx_ts ON measurements(ts)")
+    con.commit()
+
+    client = Client(url=server_url, timeout=10)
+    await client.connect()
+    logger.info("[influxdb-sim] Conectado ao OPC UA + SQLite WAL em %s", tmp_db)
+
+    try:
+        clock_offset = await _measure_clock_offset(client)
+        if CONFIG_FILE.exists():
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                config = json.load(f)
+            nodeids = _extract_nodeids(config)
+        else:
+            nodeids = ["ns=0;i=2258"]
+
+        res_monitor = ResourceMonitor()
+        res_monitor.start()
+
+        latencies: List[float] = []
+        write_latencies: List[float] = []
+        notifications = 0
+        records_written = 0
+
+        class InfluxSimHandler:
+            def __init__(self):
+                self._active = True
+                self._perf_offset = time.time() - time.perf_counter()
+
+            def datachange_notification(self, node, val, data):
+                nonlocal notifications, records_written
+                if not self._active:
+                    return
+                t_receive = time.perf_counter() + self._perf_offset
+                try:
+                    source_ts = None
+                    if hasattr(data, 'monitored_item') and hasattr(data.monitored_item, 'Value'):
+                        dv = data.monitored_item.Value
+                        if hasattr(dv, 'SourceTimestamp') and dv.SourceTimestamp:
+                            source_ts = dv.SourceTimestamp.timestamp()
+                    if source_ts is None:
+                        return
+
+                    latency_ms = (t_receive - source_ts) * 1000 - clock_offset
+                    if abs(latency_ms) < 10000:
+                        latencies.append(latency_ms)
+                    notifications += 1
+
+                    # Simula INSERT no TSDB
+                    t_w0 = time.perf_counter()
+                    try:
+                        value = float(val) if val is not None else 0.0
+                    except (TypeError, ValueError):
+                        value = 0.0
+                    nodeid_str = node.nodeid.to_string()
+                    ts_str = datetime.fromtimestamp(source_ts, tz=timezone.utc).isoformat()
+                    con.execute(
+                        "INSERT INTO measurements(ts, node_id, value) VALUES (?,?,?)",
+                        (ts_str, nodeid_str, value)
+                    )
+                    if notifications % 50 == 0:
+                        con.commit()
+                    records_written += 1
+                    t_w1 = time.perf_counter()
+                    write_latencies.append((t_w1 - t_w0) * 1000)
+                except Exception:
+                    pass
+
+            def status_change_notification(self, status):
+                pass
+
+        handler = InfluxSimHandler()
+        subscription = await client.create_subscription(
+            period=publishing_interval_ms, handler=handler
+        )
+        nodes = [client.get_node(nid) for nid in nodeids]
+        await subscription.subscribe_data_change(nodes)
+
+        result.start_time = datetime.now(timezone.utc).isoformat()
+        start = time.time()
+        while (time.time() - start) < duration_s:
+            await asyncio.sleep(1.0)
+            res_monitor.sample()
+
+        handler._active = False
+        con.commit()
+        result.end_time = datetime.now(timezone.utc).isoformat()
+        result.duration_s = time.time() - start
+        result.resources = res_monitor.stop()
+        result.acquisition_latency = _compute_latency_stats(latencies)
+        result.total_notifications = notifications
+        result.acquisition_rate_hz = notifications / result.duration_s if result.duration_s > 0 else 0
+        result.storage_records = records_written
+
+        # Tamanho do banco
+        result.storage_size_bytes = Path(tmp_db).stat().st_size
+        result.storage_size_mb = result.storage_size_bytes / (1024 * 1024)
+
+        # Query latency (range queries)
+        q_results = []
+        for name, sql in [
+            ("tsdb_last", "SELECT * FROM measurements ORDER BY ts DESC LIMIT 1"),
+            ("tsdb_range_100", "SELECT * FROM measurements ORDER BY ts DESC LIMIT 100"),
+            ("tsdb_range_1000", "SELECT * FROM measurements ORDER BY ts DESC LIMIT 1000"),
+            ("tsdb_count", "SELECT COUNT(*) FROM measurements"),
+        ]:
+            q_lat = []
+            rows = 0
+            for i in range(100):
+                t0 = time.perf_counter()
+                cur = con.execute(sql)
+                r = cur.fetchall()
+                t1 = time.perf_counter()
+                q_lat.append((t1 - t0) * 1000)
+                if i == 0:
+                    rows = len(r)
+            arr = np.array(q_lat)
+            q_results.append(QueryLatency(
+                query_name=name, n_executions=100,
+                mean_ms=float(np.mean(arr)), std_ms=float(np.std(arr)),
+                p95_ms=float(np.percentile(arr, 95)), p99_ms=float(np.percentile(arr, 99)),
+                rows_returned=rows,
+            ))
+        result.query_latencies = q_results
+
+        if write_latencies:
+            arr_w = np.array(write_latencies)
+            logger.info("[influxdb-sim] Write overhead: %.3f ± %.3f ms | DB: %.2f MB | Records: %d",
+                        float(np.mean(arr_w)), float(np.std(arr_w)),
+                        result.storage_size_mb, records_written)
+
+        try:
+            await subscription.delete()
+        except Exception:
+            pass
+
+    finally:
+        await client.disconnect()
+        con.close()
+        try:
+            os.remove(tmp_db)
+            os.remove(tmp_db + "-wal")
+            os.remove(tmp_db + "-shm")
+        except Exception:
+            pass
+
+    logger.info("[influxdb-sim] Concluído: %d notificações, %d escritas",
+                result.total_notifications, records_written)
+    return result
+
+
 async def async_main(args):
     """Entry point assíncrono."""
     scenarios = []
@@ -963,22 +1332,22 @@ async def async_main(args):
         scenarios.append(r)
         save_scenario_result(r, args.output)
 
-    if args.scenario in ("basyx", "all"):
+    if args.scenario in ("basyx", "basyx-sim", "all"):
         logger.info("═" * 70)
-        logger.info("  CENÁRIO (ii): SERVIDOR AAS ABERTO (BaSyx)")
+        logger.info("  CENÁRIO (ii): SERVIDOR AAS (simulado - overhead HTTP+JSON)")
         logger.info("═" * 70)
-        r = await run_basyx_scenario(
+        r = await run_basyx_simulated_scenario(
             server_url=args.server, duration_s=args.duration,
-            basyx_url=args.basyx_url, publishing_interval_ms=args.pub_interval,
+            publishing_interval_ms=args.pub_interval,
         )
         scenarios.append(r)
         save_scenario_result(r, args.output)
 
-    if args.scenario in ("influxdb", "all"):
+    if args.scenario in ("influxdb", "influxdb-sim", "all"):
         logger.info("═" * 70)
-        logger.info("  CENÁRIO (iii): ARQUITETURA PROPOSTA + InfluxDB")
+        logger.info("  CENÁRIO (iii): TSDB (simulado - overhead SQLite write-ahead)")
         logger.info("═" * 70)
-        r = await run_influxdb_scenario(
+        r = await run_influxdb_simulated_scenario(
             server_url=args.server, duration_s=args.duration,
             publishing_interval_ms=args.pub_interval,
         )
@@ -1016,7 +1385,7 @@ Exemplos:
     )
     parser.add_argument(
         "--scenario", type=str, default=None,
-        choices=["baseline", "basyx", "influxdb", "all"],
+        choices=["baseline", "basyx", "basyx-sim", "influxdb", "influxdb-sim", "all"],
         help="Cenário a executar"
     )
     parser.add_argument(
