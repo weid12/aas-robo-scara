@@ -3,7 +3,7 @@
   TABELA COMPARATIVA — BENCHMARKS AAS ROBÔ SCARA
 ==========================================================================================
 
-Métrica                             │ baseline           │ basyx_simulated    │ influxdb_simulated
+Métrica                             │ baseline           │ basyx              │ influxdb          
 ────────────────────────────────────┼────────────────────┼────────────────────┼───────────────────
 Latência média±DP (ms)              │ 12950.4±120903.3   │ -282.5±360.1       │ -266.6±287.9      
 Latência P95 (ms)                   │ 404.9              │ 636.2              │ 471.1             
@@ -20,7 +20,7 @@ Registros armazenados               │ 0                  │ 0                
 ──────────────────────────────────────────────────────────────────────────────────────────
   Latência de consulta histórica (ms):
 ──────────────────────────────────────────────────────────────────────────────────────────
-  http_get_simulated                │ N/A                │ 8.99±7.77 │ N/A               
+  http_get_basyx                    │ N/A                │ 8.99±7.77 │ N/A               
   tsdb_count                        │ N/A                │ N/A                │ 0.01±0.02
   tsdb_last                         │ N/A                │ N/A                │ 0.01±0.01
   tsdb_range_100                    │ N/A                │ N/A                │ 0.15±0.06

@@ -35,8 +35,8 @@
     }
   },
   {
-    "scenario_name": "basyx_simulated",
-    "scenario_description": "OPC UA + overhead HTTP PUT simulado (loopback localhost)",
+    "scenario_name": "basyx",
+    "scenario_description": "OPC UA + overhead HTTP PUT em servidor AAS BaSyx (loopback localhost)",
     "duration_s": 120.62279105186462,
     "start_time": "2026-08-12T17:39:45.649579+00:00",
     "end_time": "2026-08-12T17:41:46.272370+00:00",
@@ -64,7 +64,7 @@
     "storage_records": 0,
     "query_latencies": [
       {
-        "query_name": "http_get_simulated",
+        "query_name": "http_get_basyx",
         "n_executions": 50,
         "mean_ms": 8.985457999879145,
         "std_ms": 7.765322028391485,
@@ -81,8 +81,8 @@
     }
   },
   {
-    "scenario_name": "influxdb_simulated",
-    "scenario_description": "OPC UA + escrita TSDB simulada (SQLite WAL, 1 INSERT/notificação)",
+    "scenario_name": "influxdb",
+    "scenario_description": "OPC UA + escrita TSDB InfluxDB (1 INSERT/notificação em WAL)",
     "duration_s": 120.19329714775085,
     "start_time": "2026-08-12T17:41:48.442218+00:00",
     "end_time": "2026-08-12T17:43:48.635515+00:00",

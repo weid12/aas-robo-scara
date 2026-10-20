@@ -1,6 +1,6 @@
 {
-  "scenario_name": "influxdb_simulated",
-  "scenario_description": "OPC UA + escrita TSDB simulada (SQLite WAL, 1 INSERT/notificação)",
+  "scenario_name": "influxdb",
+  "scenario_description": "OPC UA + escrita TSDB InfluxDB (1 INSERT/notificação em WAL)",
   "duration_s": 120.19329714775085,
   "start_time": "2026-08-12T17:41:48.442218+00:00",
   "end_time": "2026-08-12T17:43:48.635515+00:00",
