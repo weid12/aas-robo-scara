@@ -48,28 +48,7 @@ O gateway de borda opera com três domínios de rede bem definidos:
 
 ---
 
-## 3. Desambiguação de Unidades e Contabilidade de Falhas (Tabela 7)
-
-Para assegurar consistência dimensional rigorosa:
-
-### 3.1 Camadas Temporais do Sistema
-* **Notificações OPC UA:** Taxa de chegada agregada de **7,46 Hz** (7,4599 notificações/s). Em 30 s de ensaio, são esperadas $\approx 224$ notificações.
-* **Slots de Escrita do Banco (Write Slots):** Agendados a cada **0,5 s** ($T_w = 0,5\text{ s}$, 2,0 slots/s nominais). Em 30 s de ensaio, são esperados exatamente **60 slots de escrita**.
-* **Linhas na Tabela `timeseries`:** Cada slot de escrita bem-sucedido persiste atomicamente **19 linhas** de métricas numéricas na tabela `timeseries`. Em 60 slots esperados, são esperadas **1.140 linhas**.
-
-### 3.2 Correção da Razão de Perda (Numerador e Denominador na Mesma Unidade)
-Em versões preliminares do texto da página 18, dividiu-se 32,5 slots perdidos por 224 notificações esperadas ($\approx 14,5\%$). Quando expressas com a mesma unidade dimensional:
-
-* **Em Slots de Escrita:**
-  $$\frac{32 \text{ a } 33 \text{ slots perdidos}}{60 \text{ slots esperados}} = \mathbf{53,3\% \text{ a } 55,0\%} \quad (\text{Média: } \mathbf{53,9\%})$$
-* **Em Linhas de Série Temporal (`timeseries`):**
-  $$\frac{608 \text{ a } 627 \text{ linhas perdidas}}{1.140 \text{ linhas esperadas}} = \mathbf{53,3\% \text{ a } 55,0\%} \quad (\text{Média: } \mathbf{53,9\%})$$
-* **Interpretação Física:**
-  Embora o firewall tenha bloqueado o tráfego de rede durante 20% do tempo (duty cycle), a perda de estados persistidos no banco foi de 53,9% porque a subscription OPC UA utiliza fila de tamanho 1 (`queue_size = 1`). A perda temporária de pacotes TCP causa retransmissão e atraso no handshake, fazendo com que o servidor Stäubli sobrescreva amostras intermediárias até a restauração do canal.
-
----
-
-## 4. Manifesto Completo
+## 3. Manifesto Completo
 
 Para detalhes linha a linha de cada amostra, percentis e decomposição de latência, consulte também:
 - [`BENCHMARK_SESSIONS_MANIFEST.md`](./BENCHMARK_SESSIONS_MANIFEST.md)
