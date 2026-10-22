@@ -21,11 +21,13 @@
       "nominal_write_interval_s": 0.5,
       "numeric_metrics_per_write_slot": 19,
       "per_event_metrics": {
-        "expected_write_slots": 20,
-        "missed_write_slots": 20,
+        "fault_duration_s": 10.0,
+        "nominal_write_slots": 20,
+        "write_batches_committed": 0,
         "write_slot_loss_pct": 100.0,
-        "expected_timeseries_rows": 380,
-        "missed_timeseries_rows": 380,
+        "expected_timeseries_rows_regime": 200,
+        "observed_rows_in_fault_window": 0,
+        "missed_timeseries_rows": 200,
         "timeseries_row_loss_pct": 100.0,
         "expected_opcua_notifications_at_7_46hz": 75
       },
@@ -37,11 +39,13 @@
         "timeseries_insert_rate_rows_per_s": 18.3,
         "total_db_rows_inserted": 10591,
         "total_db_insert_rate_rows_per_s": 85.74
-      }
+      },
+      "baseline_insert_rate_regime_rows_per_s": 20.03,
+      "pre_fault_60s_insert_rate_rows_per_s": 18.37
     }
   },
   "test_name": "disconnect_reconnect",
-  "test_description": "Desconexão OPC UA via firewall (10.0s) × 5 iterações",
+  "test_description": "Desconex\u00e3o OPC UA via firewall (10.0s) \u00d7 5 itera\u00e7\u00f5es",
   "n_iterations": 5,
   "fault_duration_s": 10.0,
   "events": [

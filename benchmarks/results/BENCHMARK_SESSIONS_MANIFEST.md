@@ -45,7 +45,7 @@ The table below maps each table, section, and key metric in the manuscript to it
 
 ---
 
-## 3. Disentanglement of Metric Units & Fault Accounting (Table 7)
+## 3. Metric Units & Corrected Fault Accounting (Table 7)
 
 ### 3.1 Clarification of Temporal Frequencies & Units
 The system operates across three distinct time bases and data representations:
@@ -56,48 +56,45 @@ The system operates across three distinct time bases and data representations:
    * In a 10 s fault duration: $10\text{ s} \times 7.4599\text{ Hz} \approx 74.6$ expected incoming notifications.
    * In a 30 s fault duration: $30\text{ s} \times 7.4599\text{ Hz} \approx 223.8$ (~224) expected incoming notifications.
 
-2. **Persistence Flush Cycle (Write Slot):**
+2. **Persistence Flush Cycle (Write Slots):**
    * Scheduled by `_writer_task` in `client_asyncua.py` and monitored by `SnapshotMonitor` in `fault_injection_benchmark.py`.
-   * Nominal interval: **0.5 s** (2.0 write slots/s).
-   * In a 10 s fault duration: $10\text{ s} / 0.5\text{ s} = 20$ expected write slots.
-   * In a 30 s fault duration: $30\text{ s} / 0.5\text{ s} = 60$ expected write slots.
+   * Nominal interval: **0.5 s** ($T_w = 0.5\text{ s}$, a ceiling of 2.0 write slots/s).
+   * In practice, the client only flushes to SQLite when values change. The observed steady-state rate of **1.05 flushes/s** shows that approximately half of the nominal 0.5 s intervals do not have a new batch to record.
+   * In a 10 s fault duration: 20 nominal write slots.
+   * In a 30 s fault duration: 60 nominal write slots.
 
-3. **SQLite Relational Table Rows:**
-   * Each executed write slot executes a single atomic transaction inserting records into the SQLite tables:
-     - `timeseries` table: **19 rows** per write slot (one row for each active numeric metric: 4 Joint positions, CycleTime, 5 Temperature probes, 6 Safety signals, 2 Power metrics, 1 Operation counter).
-     - `submodel_snapshots` table: **33 rows** per write slot (normalized key-value representation).
-     - `submodel_snapshots_json` table: **9 rows** per write slot (complete submodel JSON blobs).
-     - Total rows across all tables: **61 to 89 rows** per write slot.
-   * Nominal timeseries insertion rate: $19\text{ rows} \times 2.0\text{ slots/s} = 38.0\text{ rows/s}$.
+3. **SQLite Relational Table Rows (`timeseries`):**
+   * Each executed flush commits an atomic transaction inserting **19 rows** into the `timeseries` table (one for each actively monitored numeric telemetry metric).
+   * **Observed Steady-State Insertion Rate ($R_{\text{regime}}$):** **20.03 rows/s** (1.05 flushes/s $\times$ 19 rows).
+   * Across all tables (including normalized snapshot key-values and JSON blobs): **93.82 rows/s**.
 
-### 3.2 Resolution of the Ambiguity on Page 18
-In early drafts of page 18, the count of **32 to 33 missed write slots** was divided by the **224 expected OPC UA notifications**, yielding the mathematically inconsistent ratio:
-$$\frac{32.5\text{ missed write slots}}{224\text{ expected notifications}} \approx 14.5\% \quad \text{[INCONSISTENT UNITS]}$$
+### 3.2 Corrected Loss Accounting (Expected Rows = Baseline Rate $\times$ Fault Duration)
+To use a single unit across all calculations, expected data rows are derived from the observed steady-state insertion rate ($R_{\text{regime}} = 20.03\text{ rows/s}$) multiplied by the fault duration:
 
-When numerator and denominator share the same unit:
-* **In terms of Write Slots (nominal 0.5 s slots):**
-  $$\text{Loss Ratio} = \frac{32 \text{ to } 33\text{ missed write slots}}{60\text{ expected write slots}} = 53.33\% \text{ to } 55.00\% \quad (\text{Mean: } 53.89\%)$$
-* **In terms of Timeseries Rows (19 rows/slot):**
-  $$\text{Loss Ratio} = \frac{32.33 \times 19\text{ missed rows}}{60 \times 19\text{ expected rows}} = \frac{614.3\text{ missed rows}}{1140\text{ expected rows}} = 53.89\%$$
-* **In terms of Ingress Network Block Duty Cycle:**
-  The port was blocked for ~20% of the 30 s window (~6 s total blockage). Because the OPC UA subscription uses a server-side queue size of 1, transient disconnection and TCP connection renegotiations cause intermediate value coalescing, resulting in a 53.89% reduction in distinct persisted snapshots.
+* **Intermittent Connectivity (30 s fault duration, ~20% port block):**
+  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 30\text{ s} = 20.03 \times 30 \approx \mathbf{601\text{ rows}}$ (across 60 nominal 0.5 s slots).
+  - **Observed Rows in Fault Window:** Across the 3 iterations, 27 to 28 batches were committed, yielding **513 to 532 rows** (mean $\approx 527$ rows, observed rate in fault window $\approx 17.55\text{ rows/s}$).
+  - **Missed Rows:** $601 - 532 = 69\text{ rows}$ to $601 - 513 = 88\text{ rows}$ (mean $\approx 74\text{ rows}$).
+  - **Loss Ratio:**
+    $$\text{Loss Ratio} = \frac{69 \text{ to } 88\text{ missed rows}}{601\text{ expected rows}} = \mathbf{11.5\% \text{ to } 14.6\%} \quad (\text{Mean: } \mathbf{12.3\%})$$
+  - *Observation:* This loss of 11.5%–14.6% remains strictly below the 20% network blockage window (and is consistent with the ~14.5% previously cited), as acquisition continued in degraded form without requiring unverified causal assumptions.
 
-### 3.3 Observed SQLite Insert Rates During Fault Sessions
-Measured directly from the production database (`persistence/storage/aas_history.sqlite3`) over the exact execution intervals:
+* **Connection Loss (10 s fault duration):**
+  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 10\text{ s} = 20.03 \times 10 \approx \mathbf{200\text{ rows}}$.
+  - **Observed Rows in Fault Window:** **0 rows** (0 of 20 nominal slots committed).
+  - **Missed Rows:** **200 rows (100% loss)** during the outage.
 
-* **Baseline Pick-and-Place (Normal Operation):**
-  - Observed flush frequency: $1.05\text{ flushes/s}$ (median inter-flush $\Delta t = 0.936\text{ s}$).
-  - Timeseries insert rate: **20.03 rows/s**.
-  - Total database insert rate (all tables): **93.82 rows/s**.
-* **Connection Loss Session (123.5 s window, 5 faults of 10 s):**
-  - Observed flush frequency: $0.96\text{ flushes/s}$ (median $\Delta t = 1.045\text{ s}$).
-  - Timeseries insert rate: **18.30 rows/s** (2,261 rows in 123.5 s).
-  - Total database insert rate: **85.74 rows/s**.
-* **Intermittent Connectivity Session (128.9 s window, 3 faults of 30 s):**
-  - Observed flush frequency: $0.92\text{ flushes/s}$ (median $\Delta t = 1.093\text{ s}$).
-  - Timeseries insert rate: **17.55 rows/s** (2,261 rows in 128.9 s).
-  - Total database insert rate: **82.19 rows/s**.
-* **Gateway Restart Session (73.5 s window, 3 cold restarts of 10 s downtime):**
-  - Observed flush frequency: $1.35\text{ flushes/s}$ (median $\Delta t = 0.776\text{ s}$).
-  - Timeseries insert rate: **26.38 rows/s** (1,938 rows in 73.5 s).
-  - Total database insert rate: **123.55 rows/s**.
+* **Gateway Restart (10 s downtime):**
+  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 10\text{ s} = 20.03 \times 10 \approx \mathbf{200\text{ rows}}$.
+  - **Observed Rows in Fault Window:** **0 rows** (0 of 20 nominal slots committed).
+  - **Missed Rows:** **200 rows (100% loss)** during downtime.
+
+### 3.3 Definition of Measurement Windows and Session Rates
+* **Baseline Insert Rate (60 s pre-fault window / steady-state):** Measured over 60 s immediately preceding fault injection (18.37 rows/s) and during steady-state continuous pick-and-place (20.03 rows/s, 1.05 flushes/s).
+* **Fault Window Insert Rate:** Measured strictly during the active fault duration (0 rows/s for connection loss and gateway restart; 17.55 rows/s for intermittent connectivity).
+* **Entire Session Rate:** Measured over the complete multi-trial session including pre-fault stabilization and post-fault recovery intervals:
+  - *Connection loss session (123.5 s total, 5 faults):* 18.30 rows/s (2,261 rows, 119 flushes).
+  - *Intermittent connectivity session (128.9 s total, 3 faults):* 17.55 rows/s (2,261 rows, 119 flushes).
+  - *Gateway restart session (73.5 s total, 3 faults):* 26.38 rows/s (1,938 rows, 99 flushes). The session rate rises above steady-state baseline because upon subscription re-creation, the OPC UA server immediately publishes initial values for all 33 monitored nodes, generating a transient burst of write transactions during the initial recovery interval.
+* **Total Unavailability Definition:** Total unavailability (10.76 s for gateway restart) is defined as the 10.0 s process downtime plus the 0.76 s cold restart and reconnection delay.
+

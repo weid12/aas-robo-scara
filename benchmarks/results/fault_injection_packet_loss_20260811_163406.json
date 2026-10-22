@@ -20,12 +20,13 @@
       "nominal_write_interval_s": 0.5,
       "numeric_metrics_per_write_slot": 19,
       "per_event_metrics": {
-        "expected_write_slots": 60,
-        "succeeded_write_slots_range": [
+        "fault_duration_s": 30.0,
+        "nominal_write_slots": 60,
+        "write_batches_committed_range": [
           27,
           28
         ],
-        "missed_write_slots_range": [
+        "write_batches_missed_range": [
           32,
           33
         ],
@@ -33,19 +34,20 @@
           53.33,
           55.0
         ],
-        "expected_timeseries_rows": 1140,
-        "succeeded_timeseries_rows_range": [
+        "expected_timeseries_rows_regime": 601,
+        "observed_rows_in_fault_window_range": [
           513,
           532
         ],
         "missed_timeseries_rows_range": [
-          608,
-          627
+          69,
+          88
         ],
         "timeseries_row_loss_pct_range": [
-          53.33,
-          55.0
+          11.48,
+          14.64
         ],
+        "observed_fault_window_insert_rate_rows_per_s": 17.52,
         "expected_opcua_notifications_at_7_46hz": 224
       },
       "observed_session_rates": {
@@ -56,11 +58,13 @@
         "timeseries_insert_rate_rows_per_s": 17.55,
         "total_db_rows_inserted": 10591,
         "total_db_insert_rate_rows_per_s": 82.19
-      }
+      },
+      "baseline_insert_rate_regime_rows_per_s": 20.03,
+      "pre_fault_60s_insert_rate_rows_per_s": 18.37
     }
   },
   "test_name": "packet_loss",
-  "test_description": "Perda de pacotes simulada (~20%) por 30.0s × 3 iterações",
+  "test_description": "Perda de pacotes simulada (~20%) por 30.0s \u00d7 3 itera\u00e7\u00f5es",
   "n_iterations": 3,
   "fault_duration_s": 30.0,
   "events": [

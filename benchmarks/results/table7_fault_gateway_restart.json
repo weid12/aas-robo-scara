@@ -19,11 +19,13 @@
       "nominal_write_interval_s": 0.5,
       "numeric_metrics_per_write_slot": 19,
       "per_event_metrics": {
-        "expected_write_slots": 20,
-        "missed_write_slots": 20,
+        "fault_duration_s": 10.0,
+        "nominal_write_slots": 20,
+        "write_batches_committed": 0,
         "write_slot_loss_pct": 100.0,
-        "expected_timeseries_rows": 380,
-        "missed_timeseries_rows": 380,
+        "expected_timeseries_rows_regime": 200,
+        "observed_rows_in_fault_window": 0,
+        "missed_timeseries_rows": 200,
         "timeseries_row_loss_pct": 100.0,
         "expected_opcua_notifications_at_7_46hz": 75
       },
@@ -35,11 +37,14 @@
         "timeseries_insert_rate_rows_per_s": 26.38,
         "total_db_rows_inserted": 9078,
         "total_db_insert_rate_rows_per_s": 123.55
-      }
+      },
+      "baseline_insert_rate_regime_rows_per_s": 20.03,
+      "pre_fault_60s_insert_rate_rows_per_s": 30.4,
+      "unavailability_breakdown": "10.0 s process downtime + 0.76 s cold restart and reconnection delay"
     }
   },
   "test_name": "gateway_restart",
-  "test_description": "Kill/restart do cliente OPC UA (10.0s downtime) × 3 iterações",
+  "test_description": "Kill/restart do cliente OPC UA (10.0s downtime) \u00d7 3 itera\u00e7\u00f5es",
   "n_iterations": 3,
   "fault_duration_s": 10.0,
   "events": [
