@@ -34,19 +34,21 @@
           53.33,
           55.0
         ],
-        "expected_timeseries_rows_regime": 601,
+        "expected_timeseries_rows": 551,
         "observed_rows_in_fault_window_range": [
           513,
           532
         ],
         "missed_timeseries_rows_range": [
-          69,
-          88
+          19,
+          38
         ],
         "timeseries_row_loss_pct_range": [
-          11.48,
-          14.64
+          3.45,
+          6.9
         ],
+        "mean_missed_timeseries_rows": 25,
+        "mean_loss_pct": 4.54,
         "observed_fault_window_insert_rate_rows_per_s": 17.52,
         "expected_opcua_notifications_at_7_46hz": 224
       },
@@ -60,7 +62,8 @@
         "total_db_insert_rate_rows_per_s": 82.19
       },
       "baseline_insert_rate_regime_rows_per_s": 20.03,
-      "pre_fault_60s_insert_rate_rows_per_s": 18.37
+      "pre_fault_60s_insert_rate_rows_per_s": 18.37,
+      "baseline_insert_rate_rows_per_s": 18.37
     }
   },
   "test_name": "packet_loss",

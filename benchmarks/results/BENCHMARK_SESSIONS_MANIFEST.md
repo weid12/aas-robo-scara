@@ -68,33 +68,39 @@ The system operates across three distinct time bases and data representations:
    * **Observed Steady-State Insertion Rate ($R_{\text{regime}}$):** **20.03 rows/s** (1.05 flushes/s $\times$ 19 rows).
    * Across all tables (including normalized snapshot key-values and JSON blobs): **93.82 rows/s**.
 
-### 3.2 Corrected Loss Accounting (Expected Rows = Baseline Rate $\times$ Fault Duration)
-To use a single unit across all calculations, expected data rows are derived from the observed steady-state insertion rate ($R_{\text{regime}} = 20.03\text{ rows/s}$) multiplied by the fault duration:
+### 3.2 Corrected Loss Accounting (Option 1: Measured Baseline per Session)
+To use a single unit across all calculations, expected data rows are derived from the insert rate measured in the 60 s preceding the fault ($R_{\text{baseline}}$) multiplied by the fault duration ($\Delta t_{\text{fault}}$):
 
-* **Intermittent Connectivity (30 s fault duration, ~20% port block):**
-  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 30\text{ s} = 20.03 \times 30 \approx \mathbf{601\text{ rows}}$ (across 60 nominal 0.5 s slots).
-  - **Observed Rows in Fault Window:** Across the 3 iterations, 27 to 28 batches were committed, yielding **513 to 532 rows** (mean $\approx 527$ rows, observed rate in fault window $\approx 17.55\text{ rows/s}$).
-  - **Missed Rows:** $601 - 532 = 69\text{ rows}$ to $601 - 513 = 88\text{ rows}$ (mean $\approx 74\text{ rows}$).
+* **Intermittent Connectivity (30 s fault window, ~20% port block):**
+  - **Measured Baseline (60 s pre-fault):** **18.37 rows/s** (58 flushes $\times$ 19 numeric rows = 1,102 rows in 60 s).
+  - **Expected `timeseries` Rows:** $R_{\text{baseline}} \times 30\text{ s} = 18.3667 \times 30 \approx \mathbf{551\text{ rows}}$ (across 60 nominal 0.5 s slots).
+  - **Observed Rows in Fault Window:** Across the 3 iterations, 27 to 28 batches were committed, yielding **513 to 532 rows** (mean $\approx 526$ rows; specifically: trial 1 = 532, trial 2 = 532, trial 3 = 513).
+  - **Missed Rows:** $551 - 532 = \mathbf{19\text{ rows}}$ to $551 - 513 = \mathbf{38\text{ rows}}$ (mean $\approx \mathbf{25\text{ rows}}$).
   - **Loss Ratio:**
-    $$\text{Loss Ratio} = \frac{69 \text{ to } 88\text{ missed rows}}{601\text{ expected rows}} = \mathbf{11.5\% \text{ to } 14.6\%} \quad (\text{Mean: } \mathbf{12.3\%})$$
-  - *Observation:* This loss of 11.5%–14.6% remains strictly below the 20% network blockage window (and is consistent with the ~14.5% previously cited), as acquisition continued in degraded form without requiring unverified causal assumptions.
+    $$\text{Loss Ratio} = \frac{19 \text{ to } 38\text{ missed rows}}{551\text{ expected rows}} = \mathbf{3.5\% \text{ to } 6.9\%} \quad (\text{Mean: } \mathbf{4.6\%})$$
+  - *Physical Mechanism:* The empirical loss (3.5%–6.9%) remains strictly below the 20% network blocking ratio because each individual blocking period (~20 ms) is an order of magnitude shorter than the OPC UA publishing interval (200 ms). Since the queue size is 1, the value retained in the queue is delivered as soon as the port reopens; only batches whose publication window coincides with consecutive blocking periods are dropped.
 
 * **Connection Loss (10 s fault duration):**
-  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 10\text{ s} = 20.03 \times 10 \approx \mathbf{200\text{ rows}}$.
+  - **Measured Baseline (60 s pre-fault):** **18.37 rows/s** (58 flushes $\times$ 19 numeric rows = 1,102 rows in 60 s).
+  - **Expected `timeseries` Rows:** $R_{\text{baseline}} \times 10\text{ s} = 18.3667 \times 10 \approx \mathbf{184\text{ rows}}$ (across 20 nominal slots).
   - **Observed Rows in Fault Window:** **0 rows** (0 of 20 nominal slots committed).
-  - **Missed Rows:** **200 rows (100% loss)** during the outage.
+  - **Missed Rows:** **184 rows (100% loss)** during the outage.
 
 * **Gateway Restart (10 s downtime):**
-  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 10\text{ s} = 20.03 \times 10 \approx \mathbf{200\text{ rows}}$.
+  - **Baseline Rate:** **20.03 rows/s** (steady-state continuous regime rate, as the immediate pre-fault window in this session was influenced by preceding reboot cycles).
+  - **Expected `timeseries` Rows:** $R_{\text{regime}} \times 10\text{ s} = 20.03 \times 10 \approx \mathbf{200\text{ rows}}$ (across 20 nominal slots).
   - **Observed Rows in Fault Window:** **0 rows** (0 of 20 nominal slots committed).
   - **Missed Rows:** **200 rows (100% loss)** during downtime.
 
 ### 3.3 Definition of Measurement Windows and Session Rates
-* **Baseline Insert Rate (60 s pre-fault window / steady-state):** Measured over 60 s immediately preceding fault injection (18.37 rows/s) and during steady-state continuous pick-and-place (20.03 rows/s, 1.05 flushes/s).
-* **Fault Window Insert Rate:** Measured strictly during the active fault duration (0 rows/s for connection loss and gateway restart; 17.55 rows/s for intermittent connectivity).
+* **Baseline Insert Rate (60 s pre-fault window):** Measured over 60 s immediately preceding fault injection. For both connection loss (`20:26:38–20:27:38`) and intermittent connectivity (`20:31:11–20:32:11`), exactly 58 batch flushes took place ($58 \times 19 = 1,102$ rows, $1,102 / 60 = 18.37\text{ rows/s}$); these are independent empirical measurements during regular robot pick-and-place cycles. For gateway restart, 20.03 rows/s corresponds to the long-term steady-state regime (Table 6).
+* **Fault Window Insert Rate:** Measured strictly during the active fault duration (0 rows/s for connection loss and gateway restart; 17.10–17.73 rows/s, mean 17.52 rows/s for intermittent connectivity).
 * **Entire Session Rate:** Measured over the complete multi-trial session including pre-fault stabilization and post-fault recovery intervals:
   - *Connection loss session (123.5 s total, 5 faults):* 18.30 rows/s (2,261 rows, 119 flushes).
   - *Intermittent connectivity session (128.9 s total, 3 faults):* 17.55 rows/s (2,261 rows, 119 flushes).
   - *Gateway restart session (73.5 s total, 3 faults):* 26.38 rows/s (1,938 rows, 99 flushes). The session rate rises above steady-state baseline because upon subscription re-creation, the OPC UA server immediately publishes initial values for all 33 monitored nodes, generating a transient burst of write transactions during the initial recovery interval.
-* **Total Unavailability Definition:** Total unavailability (10.76 s for gateway restart) is defined as the 10.0 s process downtime plus the 0.76 s cold restart and reconnection delay.
+* **Fault Window Plus Recovery (Total Unavailability):**
+  - For connection loss: 11.13 s mean (10.0 s outage + 1.13 s mean recovery).
+  - For intermittent connectivity: 31.36 s mean (30.0 s disturbance window plus recovery, during which communication was degraded but active, with the port open ~80% of the time).
+  - For gateway restart: 10.76 s mean (10.0 s process downtime plus 0.76 s cold restart and reconnection delay).
 
